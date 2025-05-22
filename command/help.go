@@ -31,11 +31,7 @@ func (h HelpCommandExec) Help(c telebot.Context) error {
 	if err != nil {
 		return err
 	}
-	return c.Send(telebot.Message{
-		Text:     text,
-		ThreadID: c.Message().ThreadID,
-		Chat:     &telebot.Chat{ID: c.Chat().ID},
-	}, telebot.SendOptions{
+	return c.Send(text, telebot.SendOptions{
 		ParseMode: telebot.ModeHTML,
 	})
 }

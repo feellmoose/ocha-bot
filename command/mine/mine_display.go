@@ -101,13 +101,10 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 		}
 	}
 
-	err = c.EditOrSend(telebot.Message{
-		ID:          info.Message,
-		ThreadID:    info.Topic,
-		Chat:        &telebot.Chat{ID: info.Chat},
-		ReplyMarkup: &telebot.ReplyMarkup{InlineKeyboard: buttons},
-		Text:        text,
-	})
+	_, err = c.Bot().Edit(telebot.StoredMessage{
+		MessageID: strconv.Itoa(info.Message),
+		ChatID:    info.Chat,
+	}, text, telebot.SendOptions{ReplyMarkup: &telebot.ReplyMarkup{InlineKeyboard: buttons}})
 
 	return err
 }
