@@ -56,6 +56,9 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 	)
 	if c.Callback() != nil {
 		width, height, mines, message, topic, user, chat = m.handleMineCallback(c)
+		if user != c.Sender().ID {
+			return nil
+		}
 	} else if c.Message() != nil {
 		args := c.Args()
 		switch len(args) {
@@ -150,77 +153,29 @@ func (m *MineCommandExec) handleMineCallback(c telebot.Context) (
 }
 
 func (m *MineCommandExec) Click(c telebot.Context) error {
-	var (
-		args = c.Args()
-		user int64
-	)
-	if c.Message() == nil {
-		user = c.Message().Sender.ID
-	} else {
-		user, _ = strconv.ParseInt(args[3], 10, 64)
-	}
-	id := args[0]
+	args := c.Args()
 	x, _ := strconv.Atoi(args[1])
 	y, _ := strconv.Atoi(args[2])
-	return m.click(id, user, x, y, c)
+	return m.click(args[0], c.Sender().ID, x, y, c)
 }
 
 func (m *MineCommandExec) Flag(c telebot.Context) error {
-	var (
-		args = c.Args()
-		user int64
-	)
-	if c.Message() == nil {
-		user = c.Message().Sender.ID
-	} else {
-		user, _ = strconv.ParseInt(args[3], 10, 64)
-	}
-	id := args[0]
+	args := c.Args()
 	x, _ := strconv.Atoi(args[1])
 	y, _ := strconv.Atoi(args[2])
-	return m.flag(id, user, x, y, c)
+	return m.flag(args[0], c.Sender().ID, x, y, c)
 }
 
 func (m *MineCommandExec) Change(c telebot.Context) error {
-	var (
-		args = c.Args()
-		user int64
-	)
-	if c.Message() == nil {
-		user = c.Message().Sender.ID
-	} else {
-		user, _ = strconv.ParseInt(args[1], 10, 64)
-	}
-	id := args[0]
-	return m.change(id, user, c)
+	return m.change(c.Args()[0], c.Sender().ID, c)
 }
 
 func (m *MineCommandExec) Rollback(c telebot.Context) error {
-	var (
-		args = c.Args()
-		user int64
-	)
-	if c.Message() == nil {
-		user = c.Message().Sender.ID
-	} else {
-		user, _ = strconv.ParseInt(args[1], 10, 64)
-	}
-	id := args[0]
-	return m.rollback(id, user, c)
+	return m.rollback(c.Args()[0], c.Sender().ID, c)
 }
 
 func (m *MineCommandExec) Quit(c telebot.Context) error {
-	var (
-		args = c.Args()
-		user int64
-	)
-	if c.Message() == nil {
-		user = c.Message().Sender.ID
-	} else {
-		user, _ = strconv.ParseInt(args[1], 10, 64)
-	}
-	id := args[0]
-	return m.quit(id, user, c)
+	return m.quit(c.Args()[0], c.Sender().ID, c)
 }
 
 func (m *MineCommandExec) mine(width, height, mines, message, topic int, user, chat int64, locale string, c telebot.Context) error {
