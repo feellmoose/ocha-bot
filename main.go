@@ -30,11 +30,11 @@ func main() {
 	menu := command.MenuCommandExec{}
 
 	bot.Handle("/mine", mine.Mine)
-	bot.Handle(telebot.InlineButton{Unique: "/flag"}, mine.Mine)
-	bot.Handle(telebot.InlineButton{Unique: "/back"}, mine.Mine)
-	bot.Handle(telebot.InlineButton{Unique: "/quit"}, mine.Mine)
-	bot.Handle(telebot.InlineButton{Unique: "/click"}, mine.Mine)
-	bot.Handle(telebot.InlineButton{Unique: "/change"}, mine.Mine)
+	bot.Handle("\f/flag", mine.Flag)
+	bot.Handle("\f/back", mine.Rollback)
+	bot.Handle("\f/quit", mine.Quit)
+	bot.Handle("\f/click", mine.Click)
+	bot.Handle("\f/change", mine.Change)
 
 	bot.Handle("/help", help.Help)
 
