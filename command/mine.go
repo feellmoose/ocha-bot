@@ -57,10 +57,10 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 	)
 	log.Printf("%v", c.Args())
 	if c.Message() != nil {
-		log.Printf("%v", c.Message())
+		log.Printf("Message")
 		width, height, mines, message, topic, user, chat = m.handleMineMessage(c)
 	} else if c.Callback() != nil {
-		log.Printf("%v", c.Callback())
+		log.Printf("Callback")
 		width, height, mines, message, topic, user, chat = m.handleMineCallback(c)
 	}
 	log.Printf("(width=%d,height=%d,mines=%d,message=%d,topic=%d,user=%d,chat=%d",
@@ -126,7 +126,7 @@ func (m *MineCommandExec) handleMineMessage(c telebot.Context) (
 				mines = 13
 			}
 		}
-	case 4:
+	case 3:
 		width, _ = strconv.Atoi(args[0])
 		height, _ = strconv.Atoi(args[1])
 		mines, _ = strconv.Atoi(args[2])
