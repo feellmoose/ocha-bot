@@ -32,7 +32,7 @@ jobs:
       - name: Stop bot service
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
-            sudo systemctl stop ocha_bot.service || true
+            sudo systemctl stop ocha-bot.service || true
           "
 
       - name: Remove old binary on server
@@ -48,5 +48,5 @@ jobs:
       - name: Start bot service
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
-            sudo systemctl start ocha_bot.service
+            sudo systemctl start ocha-bot.service
           "
