@@ -249,9 +249,7 @@ func (m *MineCommandExec) flag(id string, user int64, x, y int, c telebot.Contex
 
 func (m *MineCommandExec) change(id string, user int64, c telebot.Context) error {
 	if data, ok := m.repo.Get(id); ok {
-		serialized := data.(mine.Serialized)
-
-		game := serialized.Deserialize()
+		game := data.(mine.Serialized).Deserialize()
 
 		if user != game.UserID() {
 			return nil
@@ -265,16 +263,16 @@ func (m *MineCommandExec) change(id string, user int64, c telebot.Context) error
 			button = mine.BClick
 		}
 
-		serialized = game.OnInfoChanged(mine.Additional{
+		game = game.OnInfoChanged(mine.Additional{
 			Type:    info.Type,
 			Button:  button,
 			Locale:  info.Locale,
 			Topic:   info.Topic,
 			Chat:    info.Chat,
 			Message: info.Message,
-		}).Serialize()
+		})
 
-		if !m.repo.Put(id, serialized) {
+		if !m.repo.Put(id, game.Serialize()) {
 			return errors.New("put repo failed")
 		}
 		return game.Display(c)
