@@ -94,7 +94,7 @@ func mineClassic(user int64, topic int, lang string, c telebot.Context) (string,
 	reply.Inline(reply.Row(
 		reply.Data(
 			helper.Messages[lang]["mine.game.start.button"].String(),
-			"/create",
+			"mine",
 			"8", "8", "10", strconv.FormatInt(user, 10), strconv.Itoa(topic),
 		),
 	),

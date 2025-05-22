@@ -37,12 +37,12 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 		}
 		buttons = append(buttons, []telebot.InlineButton{
 			{
-				Unique: "/change",
+				Unique: "change",
 				Text:   helper.Messages[info.Locale][change].String(),
 				Data:   t.ID(),
 			},
 			{
-				Unique: "/quit",
+				Unique: "quit",
 				Text:   helper.Messages[info.Locale]["mine.game.opt.quit"].String(),
 				Data:   t.ID(),
 			},
@@ -60,12 +60,12 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 		}
 		buttons = append(buttons, []telebot.InlineButton{
 			{
-				Unique: "/change",
+				Unique: "change",
 				Text:   helper.Messages[info.Locale][change].String(),
 				Data:   t.ID(),
 			},
 			{
-				Unique: "/quit",
+				Unique: "quit",
 				Text:   helper.Messages[info.Locale]["mine.game.opt.quit"].String(),
 				Data:   t.ID(),
 			},
@@ -90,7 +90,7 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 			})
 			buttons = append(buttons, []telebot.InlineButton{
 				{
-					Unique: "/mine",
+					Unique: "mine",
 					Text:   helper.Messages[info.Locale]["mine.game.lose.button"].String(),
 					Data:   "10|10|8|" + strconv.FormatInt(t.UserID(), 10) + "|" + strconv.Itoa(info.Topic),
 				},
@@ -163,7 +163,7 @@ func (t TelegramMineGame) emptyButton(boxes [][]Box) [][]telebot.InlineButton {
 	} else {
 		action = "click"
 	}
-	unique := "/" + action
+	unique := action
 
 	buttons := make([][]telebot.InlineButton, len(boxes))
 	for i, row := range boxes {
@@ -200,7 +200,7 @@ func (t TelegramMineGame) runningButton(boxes [][]Box) [][]telebot.InlineButton 
 	} else {
 		action = "click"
 	}
-	unique := "/" + action
+	unique := action
 
 	buttons := make([][]telebot.InlineButton, len(boxes))
 	for i := 0; i < t.Width(); i++ {

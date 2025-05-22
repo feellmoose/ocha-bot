@@ -30,11 +30,16 @@ func main() {
 	menu := command.MenuCommandExec{}
 
 	bot.Handle("/mine", mine.Mine)
-	bot.Handle("\f/flag", mine.Flag)
-	bot.Handle("\f/back", mine.Rollback)
-	bot.Handle("\f/quit", mine.Quit)
-	bot.Handle("\f/click", mine.Click)
-	bot.Handle("\f/change", mine.Change)
+	bot.Handle("\fmine", mine.Mine)
+	bot.Handle("\fflag", mine.Flag)
+	bot.Handle("\fback", mine.Rollback)
+	bot.Handle("\fquit", mine.Quit)
+	bot.Handle("\fclick", mine.Click)
+	bot.Handle("\fchange", mine.Change)
+	bot.Handle(telebot.OnCallback, func(context telebot.Context) error {
+		log.Printf("data=%v,args=%v", context.Callback().Data, context.Args())
+		return nil
+	})
 
 	bot.Handle("/help", help.Help)
 
