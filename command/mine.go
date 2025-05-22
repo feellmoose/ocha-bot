@@ -3,6 +3,7 @@ package command
 import (
 	"errors"
 	"gopkg.in/telebot.v4"
+	"log"
 	"ocha_server_bot/command/mine"
 	"ocha_server_bot/helper"
 	"strconv"
@@ -61,6 +62,7 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 		}
 	} else if c.Message() != nil {
 		args := c.Args()
+		log.Printf("mine:message:args=%v", args)
 		switch len(args) {
 		case 0:
 			return RedirectTo(c, "mine")
@@ -96,6 +98,8 @@ func (m *MineCommandExec) handleMineCallback(c telebot.Context) (
 	args := c.Args()
 	message = c.Callback().Message.ID
 	chat = c.Callback().Message.Chat.ID
+
+	log.Printf("mine:callback:args=%v", args)
 
 	switch len(args) {
 	case 3:
@@ -154,6 +158,7 @@ func (m *MineCommandExec) handleMineCallback(c telebot.Context) (
 
 func (m *MineCommandExec) Click(c telebot.Context) error {
 	args := c.Args()
+	log.Printf("mine:click:args=%v", args)
 	x, _ := strconv.Atoi(args[1])
 	y, _ := strconv.Atoi(args[2])
 	return m.click(args[0], c.Sender().ID, x, y, c)
@@ -161,6 +166,7 @@ func (m *MineCommandExec) Click(c telebot.Context) error {
 
 func (m *MineCommandExec) Flag(c telebot.Context) error {
 	args := c.Args()
+	log.Printf("mine:flag:args=%v", args)
 	x, _ := strconv.Atoi(args[1])
 	y, _ := strconv.Atoi(args[2])
 	return m.flag(args[0], c.Sender().ID, x, y, c)

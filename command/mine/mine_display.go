@@ -118,37 +118,37 @@ func (t TelegramMineGame) endedButton(boxes [][]Box) [][]telebot.InlineButton {
 				buttons[i][j] = telebot.InlineButton{
 					Unique: "empty",
 					Text:   "💥",
-					Data:   t.ID() + "|" + strconv.Itoa(i) + "|" + strconv.Itoa(j),
+					Data:   t.ID() + strconv.Itoa(i) + strconv.Itoa(j),
 				}
 			} else if box.IsMine() && box.IsFlagged() {
 				buttons[i][j] = telebot.InlineButton{
 					Unique: "empty",
 					Text:   "✅",
-					Data:   t.ID() + "|" + strconv.Itoa(i) + "|" + strconv.Itoa(j),
+					Data:   t.ID() + strconv.Itoa(i) + strconv.Itoa(j),
 				}
 			} else if box.IsMine() {
 				buttons[i][j] = telebot.InlineButton{
 					Unique: "empty",
 					Text:   "💣",
-					Data:   t.ID() + "|" + strconv.Itoa(i) + "|" + strconv.Itoa(j),
+					Data:   t.ID() + strconv.Itoa(i) + strconv.Itoa(j),
 				}
 			} else if box.IsFlagged() {
 				buttons[i][j] = telebot.InlineButton{
 					Unique: "empty",
 					Text:   "🚩",
-					Data:   t.ID() + "|" + strconv.Itoa(i) + "|" + strconv.Itoa(j),
+					Data:   t.ID() + strconv.Itoa(i) + strconv.Itoa(j),
 				}
 			} else if box.IsClicked() {
 				buttons[i][j] = telebot.InlineButton{
 					Unique: "empty",
 					Text:   strconv.Itoa(box.Num()),
-					Data:   t.ID() + "|" + strconv.Itoa(i) + "|" + strconv.Itoa(j),
+					Data:   t.ID() + strconv.Itoa(i) + strconv.Itoa(j),
 				}
 			} else {
 				buttons[i][j] = telebot.InlineButton{
 					Unique: "empty",
 					Text:   " ",
-					Data:   t.ID() + "|" + strconv.Itoa(i) + "|" + strconv.Itoa(j),
+					Data:   t.ID() + strconv.Itoa(i) + strconv.Itoa(j),
 				}
 			}
 		}

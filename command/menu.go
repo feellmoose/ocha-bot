@@ -31,6 +31,8 @@ func RedirectTo(c telebot.Context, args ...string) error {
 		err   error
 	)
 
+	log.Printf("menu:args=%v", args)
+
 	switch len(args) {
 	case 1:
 		menu = args[0]
@@ -49,8 +51,6 @@ func RedirectTo(c telebot.Context, args ...string) error {
 	}
 
 	lang = c.Sender().LanguageCode
-
-	log.Printf("%v", args)
 
 	switch menu {
 	case "mine", "mine_classic":
