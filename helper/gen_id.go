@@ -31,13 +31,13 @@ func NewGenRandomRepoShortID(minLen, maxLen, retry int, repo Repo) *GenRandomRep
 func (g *GenRandomRepoShortID) NextID() (string, error) {
 	for i := g.MinLen; i <= g.MaxLen; i++ {
 		draft := RandomString(i)
-		if _, ok := g.repo.Get(draft); ok {
+		if _, ok := g.repo.Get(draft); !ok {
 			return draft, nil
 		}
 	}
 	for i := 0; i < g.Retry; i++ {
 		draft := RandomString(i)
-		if _, ok := g.repo.Get(draft); ok {
+		if _, ok := g.repo.Get(draft); !ok {
 			return draft, nil
 		}
 	}
