@@ -3,6 +3,7 @@ package command
 import (
 	"errors"
 	"gopkg.in/telebot.v4"
+	"log"
 	"ocha_server_bot/helper"
 	"strconv"
 )
@@ -48,6 +49,8 @@ func RedirectTo(c telebot.Context, args ...string) error {
 	}
 
 	lang = c.Sender().LanguageCode
+
+	log.Printf("%v", args)
 
 	switch menu {
 	case "mine", "mine_classic":

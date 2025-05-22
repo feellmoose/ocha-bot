@@ -4,7 +4,7 @@ import (
 	"gopkg.in/telebot.v4"
 	"gopkg.in/telebot.v4/middleware"
 	"log"
-	command2 "ocha_server_bot/command"
+	"ocha_server_bot/command"
 	"ocha_server_bot/helper"
 	"os"
 	"time"
@@ -25,8 +25,10 @@ func main() {
 
 	bot.Use(middleware.Recover())
 
-	mine := command2.NewMineCommandExec(helper.NewMemRepo())
-	help := command2.HelpCommandExec{}
+	mine := command.NewMineCommandExec(helper.NewMemRepo())
+	help := command.HelpCommandExec{}
+	menu := command.MenuCommandExec{}
+
 	bot.Handle("/mine", mine.Mine)
 	bot.Handle("/flag", mine.Flag)
 	bot.Handle("/back", mine.Rollback)
@@ -35,6 +37,8 @@ func main() {
 	bot.Handle("/change", mine.Change)
 
 	bot.Handle("/help", help.Help)
+
+	bot.Handle("/menu", menu.Menu)
 
 	log.Println("Bot started")
 	bot.Start()
