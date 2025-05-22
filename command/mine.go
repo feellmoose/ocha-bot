@@ -58,7 +58,19 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 	log.Printf("%v", c.Args())
 	if c.Message() != nil {
 		log.Printf("Message")
-		width, height, mines, message, topic, user, chat = m.handleMineMessage(c)
+		args := c.Args()
+		switch len(args) {
+		case 0:
+			return RedirectTo(c, "mine")
+		case 3:
+			width, _ = strconv.Atoi(args[0])
+			height, _ = strconv.Atoi(args[1])
+			mines, _ = strconv.Atoi(args[2])
+		}
+		message = c.Message().ID
+		topic = c.Message().ThreadID
+		user = c.Message().Sender.ID
+		chat = c.Message().Chat.ID
 	} else if c.Callback() != nil {
 		log.Printf("Callback")
 		width, height, mines, message, topic, user, chat = m.handleMineCallback(c)
@@ -73,69 +85,6 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 		chat,
 		c.Sender().LanguageCode,
 		c)
-}
-
-func (m *MineCommandExec) handleMineMessage(c telebot.Context) (
-	width,
-	height,
-	mines,
-	message,
-	topic int,
-	user,
-	chat int64) {
-
-	args := c.Args()
-	switch len(args) {
-	case 1:
-		action := args[0]
-		switch action {
-		case "classic":
-			width = 8
-			height = 8
-			mines = 10
-		case "random":
-			width = helper.Num(3, 8)
-			height = helper.Num(3, 8)
-			density := helper.RandomDensity(0.15, 0.25, func(f float64) float64 {
-				if f > 0.7 {
-					return 0.3 * f
-				} else if f < 0.2 {
-					return 2.5 * f
-				}
-				return f
-			})
-			mines = int(float64(width*height) * density)
-		}
-	case 2:
-		action := args[0]
-		switch action {
-		case "level":
-			level := args[1]
-			switch level {
-			case "easy":
-				width = 6
-				height = 6
-				mines = 5
-			case "normal":
-				width = 8
-				height = 8
-				mines = 10
-			case "hard":
-				width = 8
-				height = 8
-				mines = 13
-			}
-		}
-	case 3:
-		width, _ = strconv.Atoi(args[0])
-		height, _ = strconv.Atoi(args[1])
-		mines, _ = strconv.Atoi(args[2])
-	}
-	message = c.Message().ID
-	topic = c.Message().ThreadID
-	user = c.Message().Sender.ID
-	chat = c.Message().Chat.ID
-	return
 }
 
 func (m *MineCommandExec) handleMineCallback(c telebot.Context) (
@@ -392,7 +341,13 @@ func (m *MineCommandExec) quit(id string, user int64, c telebot.Context) error {
 		if !m.repo.Del(id) {
 			return errors.New("put repo failed")
 		}
-		return game.Display(c)
+		_, err := c.Bot().Edit(telebot.StoredMessage{
+			MessageID: strconv.Itoa(game.Infos().Message),
+			ChatID:    game.Infos().Chat},
+			"@"+c.Sender().Username+" Quit Success!",
+			telebot.RemoveKeyboard,
+		)
+		return err
 	}
 	return nil
 }

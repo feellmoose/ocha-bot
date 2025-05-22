@@ -29,12 +29,12 @@ func (t Template) Execute(data any) (string, error) {
 var templates = map[string]map[string]string{
 	"en": {
 		"mine.game.start.note": `@{{ .Username }}
-Hey there! 👋 Thanks for choosing Mine Sweeper Bot Plus!
+Hey there! 👋 Thanks for choosing ocha server!
 You have started a new {{ .Width }} × {{ .Height }} game with {{ .Mines }} mines.`,
 		"mine.game.start.button": `Click to Start`,
 		"mine.game.win.note": `@{{ .Username }}
 Congratulations! 🎉
-You've successfully completed the game in {{ .Seconds }} seconds.
+You've successfully completed the mine sweeper game in {{ .Seconds }} seconds.
 Map Dimensions: {{ .Width }} × {{ .Height }}
 Number of Mines: {{ .Mines }}
 Well done on your achievement!`,
@@ -52,22 +52,22 @@ Better luck next time!`,
 		"mine.game.opt.click":   `Click`,
 		"mine.game.error":       `@{{ .Username }} Oops! Something went wrong! {{.Message}}!`,
 		"mine.help": `@{{ .Username }}
-Hey there! 👋 Thanks for choosing Mine Sweeper Bot Plus!
+Hey there! 👋 Thanks for choosing ocha server!
 Here's a list of commands to get you started:
 
 /mine [&lt;width&gt; &lt;height&gt; &lt;mine&gt;]
 /help
 
 <blockquote>
-Mine Sweeper Bot Plus created by @feellmoose_dev
+ocha bot created by @feellmoose_dev
 Version {{.Version}}
 Last update at {{.Update}}
 </blockquote>`,
 	},
 	"zh": {
 		"mine.game.start.note": `@{{ .Username }}
-哈啰！👋 感谢您使用 Mine Sweeper Bot Plus！
-您已开始一个新的 {{ .Width }} × {{ .Height }} 地图
+您好！我是为您提供本次服务的ocha服务生！
+您已开始一个新的 {{ .Width }} × {{ .Height }} 扫雷地图
 共有 {{ .Mines }} 个地雷`,
 		"mine.game.start.button": `点击开始`,
 		"mine.game.win.note": `@{{ .Username }}
@@ -90,14 +90,14 @@ Last update at {{.Update}}
 		"mine.game.opt.click":   `切换\扫雷`,
 		"mine.game.error":       `@{{ .Username }} 哎呀！出了点问题！{{.Message}}！`,
 		"mine.help": `@{{ .Username }}
-感谢您使用 Mine Sweeper Bot Plus ！
+感谢您使用ocha server！
 以下是一些帮助您入门的命令：
 
 /mine [&lt;宽度&gt; &lt;高度&gt; &lt;地雷数&gt;]
 /help
 
 <blockquote>
-Mine Sweeper Bot Plus
+ocha bot
 作者: @feellmoose_dev
 版本信息:{{.Version}}
 更新于:{{.Update}}
