@@ -50,6 +50,10 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 		if err != nil {
 			return err
 		}
+		_, err = c.Bot().EditReplyMarkup(telebot.StoredMessage{
+			MessageID: strconv.Itoa(info.Message),
+			ChatID:    info.Chat,
+		}, &telebot.ReplyMarkup{InlineKeyboard: buttons})
 	case Running:
 		buttons = t.runningButton(boxes)
 		var change string
@@ -70,6 +74,10 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 				Data:   t.ID(),
 			},
 		})
+		_, err = c.Bot().EditReplyMarkup(telebot.StoredMessage{
+			MessageID: strconv.Itoa(info.Message),
+			ChatID:    info.Chat,
+		}, &telebot.ReplyMarkup{InlineKeyboard: buttons})
 	case End:
 		buttons = t.endedButton(boxes)
 		if t.Win() {
@@ -99,12 +107,12 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 		if err != nil {
 			return err
 		}
-	}
 
-	_, err = c.Bot().Edit(telebot.StoredMessage{
-		MessageID: strconv.Itoa(info.Message),
-		ChatID:    info.Chat,
-	}, text, &telebot.ReplyMarkup{InlineKeyboard: buttons})
+		_, err = c.Bot().Edit(telebot.StoredMessage{
+			MessageID: strconv.Itoa(info.Message),
+			ChatID:    info.Chat,
+		}, text, &telebot.ReplyMarkup{InlineKeyboard: buttons})
+	}
 
 	return err
 }
