@@ -63,7 +63,7 @@ func RedirectTo(c telebot.Context, args ...string) error {
 	case "create", "":
 		_, err = c.Bot().Send(c.Chat(),
 			text,
-			telebot.SendOptions{
+			&telebot.SendOptions{
 				ThreadID:    topic,
 				ReplyMarkup: reply,
 			})
@@ -71,7 +71,7 @@ func RedirectTo(c telebot.Context, args ...string) error {
 	case "jump":
 		return c.Edit(
 			text,
-			telebot.SendOptions{
+			&telebot.SendOptions{
 				ThreadID:    topic,
 				ReplyMarkup: reply,
 			})
