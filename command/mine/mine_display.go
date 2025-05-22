@@ -2,7 +2,7 @@ package mine
 
 import (
 	"gopkg.in/telebot.v4"
-	"ocha_server_bot/src/helper"
+	"ocha_server_bot/helper"
 	"strconv"
 )
 

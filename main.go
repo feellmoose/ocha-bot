@@ -3,8 +3,8 @@ package main
 import (
 	"gopkg.in/telebot.v4"
 	"log"
-	"ocha_server_bot/src/command"
-	"ocha_server_bot/src/helper"
+	command2 "ocha_server_bot/command"
+	"ocha_server_bot/helper"
 	"os"
 	"time"
 )
@@ -23,8 +23,8 @@ func main() {
 	if err != nil {
 		log.Panicf("Error create bot: %v", err)
 	}
-	mine := command.NewMineCommandExec(helper.NewMemRepo())
-	help := command.HelpCommandExec{}
+	mine := command2.NewMineCommandExec(helper.NewMemRepo())
+	help := command2.HelpCommandExec{}
 	bot.Handle("/mine", mine.Mine)
 	bot.Handle("/flag", mine.Flag)
 	bot.Handle("/back", mine.Rollback)

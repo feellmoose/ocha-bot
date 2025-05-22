@@ -2,7 +2,7 @@ package command
 
 import (
 	"gopkg.in/telebot.v4"
-	"ocha_server_bot/src/helper"
+	"ocha_server_bot/helper"
 	"time"
 )
 
@@ -32,10 +32,10 @@ func (h HelpCommandExec) Help(c telebot.Context) error {
 		return err
 	}
 	return c.Send(telebot.Message{
-		Text: text,
-		Chat: &telebot.Chat{ID: c.Chat().ID},
+		Text:     text,
+		ThreadID: c.Message().ThreadID,
+		Chat:     &telebot.Chat{ID: c.Chat().ID},
 	}, telebot.SendOptions{
-		ThreadID:  c.Message().ThreadID,
-		ParseMode: "HTML",
+		ParseMode: telebot.ModeHTML,
 	})
 }

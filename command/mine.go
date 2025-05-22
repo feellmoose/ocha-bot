@@ -3,8 +3,8 @@ package command
 import (
 	"errors"
 	"gopkg.in/telebot.v4"
-	"ocha_server_bot/src/command/mine"
-	"ocha_server_bot/src/helper"
+	mine2 "ocha_server_bot/command/mine"
+	helper2 "ocha_server_bot/helper"
 	"strconv"
 )
 
@@ -31,16 +31,16 @@ type MineCommandFunc interface {
 */
 
 type MineCommandExec struct {
-	repo    *helper.MemRepo
-	id      *helper.GenRandomRepoShortID
-	factory mine.Factory
+	repo    *helper2.MemRepo
+	id      *helper2.GenRandomRepoShortID
+	factory mine2.Factory
 }
 
-func NewMineCommandExec(repo *helper.MemRepo) *MineCommandExec {
+func NewMineCommandExec(repo *helper2.MemRepo) *MineCommandExec {
 	return &MineCommandExec{
 		repo:    repo,
-		factory: mine.Factory{},
-		id:      helper.NewGenRandomRepoShortID(4, 16, 5, repo),
+		factory: mine2.Factory{},
+		id:      helper2.NewGenRandomRepoShortID(4, 16, 5, repo),
 	}
 }
 
@@ -66,7 +66,7 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 		user,
 		chat,
 		c.Sender().LanguageCode,
-		mine.ClassicBottom)
+		mine2.ClassicBottom)
 }
 
 func (m *MineCommandExec) handleMineMessage(c telebot.Context) (
@@ -88,9 +88,9 @@ func (m *MineCommandExec) handleMineMessage(c telebot.Context) (
 			height = 8
 			mines = 10
 		case "random":
-			width = helper.Num(3, 8)
-			height = helper.Num(3, 8)
-			density := helper.RandomDensity(0.15, 0.25, func(f float64) float64 {
+			width = helper2.Num(3, 8)
+			height = helper2.Num(3, 8)
+			density := helper2.RandomDensity(0.15, 0.25, func(f float64) float64 {
 				if f > 0.7 {
 					return 0.3 * f
 				} else if f < 0.2 {
@@ -154,9 +154,9 @@ func (m *MineCommandExec) handleMineCallback(c telebot.Context) (
 			height = 8
 			mines = 10
 		case "random":
-			width = helper.Num(3, 8)
-			height = helper.Num(3, 8)
-			density := helper.RandomDensity(0.15, 0.25, func(f float64) float64 {
+			width = helper2.Num(3, 8)
+			height = helper2.Num(3, 8)
+			density := helper2.RandomDensity(0.15, 0.25, func(f float64) float64 {
 				if f > 0.7 {
 					return 0.3 * f
 				} else if f < 0.2 {
@@ -274,11 +274,11 @@ func (m *MineCommandExec) Quit(c telebot.Context) error {
 	return m.quit(id, user)
 }
 
-func (m *MineCommandExec) mine(width, height, mines, message, topic int, user, chat int64, locale string, t mine.GameType) error {
+func (m *MineCommandExec) mine(width, height, mines, message, topic int, user, chat int64, locale string, t mine2.GameType) error {
 	err := m.id.WithID(func(id string) error {
-		game, err := m.factory.Empty(id, user, mine.Additional{
+		game, err := m.factory.Empty(id, user, mine2.Additional{
 			Type:    t,
-			Button:  mine.BClick,
+			Button:  mine2.BClick,
 			Locale:  locale,
 			Topic:   topic,
 			Chat:    chat,
@@ -300,11 +300,11 @@ func (m *MineCommandExec) mine(width, height, mines, message, topic int, user, c
 
 func (m *MineCommandExec) click(id string, user int64, x, y int) error {
 	if data, ok := m.repo.Get(id); ok {
-		game := data.(mine.Serialized).Deserialize()
+		game := data.(mine2.Serialized).Deserialize()
 		if user != game.UserID() {
 			return nil
 		}
-		game = game.OnClicked(mine.Position{X: x, Y: y})
+		game = game.OnClicked(mine2.Position{X: x, Y: y})
 
 		if !m.repo.Put(id, game.Serialize()) {
 			return errors.New("put repo failed")
@@ -316,11 +316,11 @@ func (m *MineCommandExec) click(id string, user int64, x, y int) error {
 
 func (m *MineCommandExec) flag(id string, user int64, x, y int) error {
 	if data, ok := m.repo.Get(id); ok {
-		game := data.(mine.Serialized).Deserialize()
+		game := data.(mine2.Serialized).Deserialize()
 		if user != game.UserID() {
 			return nil
 		}
-		game = game.OnFlagged(mine.Position{X: x, Y: y})
+		game = game.OnFlagged(mine2.Position{X: x, Y: y})
 
 		if !m.repo.Put(id, game.Serialize()) {
 			return errors.New("put repo failed")
@@ -332,7 +332,7 @@ func (m *MineCommandExec) flag(id string, user int64, x, y int) error {
 
 func (m *MineCommandExec) change(id string, user int64) error {
 	if data, ok := m.repo.Get(id); ok {
-		serialized := data.(mine.Serialized)
+		serialized := data.(mine2.Serialized)
 
 		game := serialized.Deserialize()
 
@@ -341,14 +341,14 @@ func (m *MineCommandExec) change(id string, user int64) error {
 		}
 
 		info := game.Infos()
-		var button mine.Button
-		if info.Button == mine.BClick {
-			button = mine.BFlag
+		var button mine2.Button
+		if info.Button == mine2.BClick {
+			button = mine2.BFlag
 		} else {
-			button = mine.BClick
+			button = mine2.BClick
 		}
 
-		serialized = game.OnInfoChanged(mine.Additional{
+		serialized = game.OnInfoChanged(mine2.Additional{
 			Type:    info.Type,
 			Button:  button,
 			Locale:  info.Locale,
@@ -367,7 +367,7 @@ func (m *MineCommandExec) change(id string, user int64) error {
 
 func (m *MineCommandExec) rollback(id string, user int64) error {
 	if data, ok := m.repo.Get(id); ok {
-		game := data.(mine.Serialized).Deserialize()
+		game := data.(mine2.Serialized).Deserialize()
 		if user != game.UserID() {
 			return nil
 		}
@@ -383,7 +383,7 @@ func (m *MineCommandExec) rollback(id string, user int64) error {
 
 func (m *MineCommandExec) quit(id string, user int64) error {
 	if data, ok := m.repo.Get(id); ok {
-		game := data.(mine.Serialized).Deserialize()
+		game := data.(mine2.Serialized).Deserialize()
 		if user != game.UserID() {
 			return nil
 		}
