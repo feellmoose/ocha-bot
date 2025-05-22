@@ -164,7 +164,7 @@ func (t TelegramMineGame) endedButton(boxes [][]Box) [][]telebot.InlineButton {
 	return buttons
 }
 
-func (t TelegramMineGame) emptyButton(boxes [][]Box) [][]telebot.InlineButton {
+func (t TelegramMineGame) runningButton(boxes [][]Box) [][]telebot.InlineButton {
 	var action string
 	if t.Infos().Button == BFlag {
 		action = "flag"
@@ -201,7 +201,7 @@ func (t TelegramMineGame) emptyButton(boxes [][]Box) [][]telebot.InlineButton {
 	return buttons
 }
 
-func (t TelegramMineGame) runningButton(boxes [][]Box) [][]telebot.InlineButton {
+func (t TelegramMineGame) emptyButton(boxes [][]Box) [][]telebot.InlineButton {
 	var action string
 	if t.Infos().Button == BFlag {
 		action = "flag"
