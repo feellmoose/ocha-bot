@@ -1,0 +1,52 @@
+name: Remote Deploy
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.4'
+
+      - name: Build Go binary for Linux
+        run: |
+          go mod tidy
+          GOOS=linux GOARCH=amd64 go build -o ./target/ocha_bot ./src
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Stop bot service
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            sudo systemctl stop ocha_bot.service || true
+          "
+
+      - name: Remove old binary on server
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            rm -f /home/${{ secrets.SSH_USER }}/ocha_bot
+          "
+
+      - name: Upload new binary to server
+        run: |
+          scp ./target/ocha_bot ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/ocha_bot
+
+      - name: Start bot service
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            sudo systemctl start ocha_bot.service
+          "

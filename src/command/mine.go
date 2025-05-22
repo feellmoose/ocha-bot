@@ -8,6 +8,28 @@ import (
 	"strconv"
 )
 
+// MineCommandFunc support commands:
+type MineCommandFunc interface {
+	Mine(c telebot.Context) error
+	Click(c telebot.Context) error
+	Flag(c telebot.Context) error
+	Change(c telebot.Context) error
+	Rollback(c telebot.Context) error
+	Quit(c telebot.Context) error
+}
+
+/*
+/mine [][][]      user topic {length = 4,6}
+/mine level    [] user topic {length = 3,5} level
+/mine random      user topic {length = 2,4} random
+/mine classic     user topic {length = 2,4} classic
+/click  game [][]
+/flag   game [][]
+/back   game
+/change game
+/quit   game
+*/
+
 type MineCommandExec struct {
 	repo    *helper.MemRepo
 	id      *helper.GenRandomRepoShortID
@@ -22,30 +44,237 @@ func NewMineCommandExec(repo *helper.MemRepo) *MineCommandExec {
 	}
 }
 
-func (m *MineCommandExec) MineMessage(args []string, message telebot.Message) error {
-	width, err := strconv.Atoi(args[0])
-	if err != nil {
-		return err
+func (m *MineCommandExec) Mine(c telebot.Context) error {
+	var (
+		width   int
+		height  int
+		mines   int
+		message int
+		topic   int
+		user    int64
+		chat    int64
+	)
+	if c.Message() != nil {
+		width, height, mines, message, topic, user, chat = m.handleMineMessage(c)
+	} else if c.Callback() != nil {
+		width, height, mines, message, topic, user, chat = m.handleMineCallback(c)
 	}
-	height, err := strconv.Atoi(args[0])
-	if err != nil {
-		return err
-	}
-	mines, err := strconv.Atoi(args[0])
-	if err != nil {
-		return err
-	}
-	return m.Mine(
+	return m.mine(
 		width, height, mines,
-		message.ID,
-		message.ThreadID,
-		message.Sender.ID,
-		message.Chat.ID,
-		message.Sender.LanguageCode,
+		message,
+		topic,
+		user,
+		chat,
+		c.Sender().LanguageCode,
 		mine.ClassicBottom)
 }
 
-func (m *MineCommandExec) Mine(width, height, mines, message, topic int, user, chat int64, locale string, t mine.GameType) error {
+func (m *MineCommandExec) handleMineMessage(c telebot.Context) (
+	width,
+	height,
+	mines,
+	message,
+	topic int,
+	user,
+	chat int64) {
+
+	args := c.Args()
+	switch len(args) {
+	case 2:
+		action := args[1]
+		switch action {
+		case "classic":
+			width = 8
+			height = 8
+			mines = 10
+		case "random":
+			width = helper.Num(3, 8)
+			height = helper.Num(3, 8)
+			density := helper.RandomDensity(0.15, 0.25, func(f float64) float64 {
+				if f > 0.7 {
+					return 0.3 * f
+				} else if f < 0.2 {
+					return 2.5 * f
+				}
+				return f
+			})
+			mines = int(float64(width*height) * density)
+		}
+	case 3:
+		action := args[1]
+		switch action {
+		case "level":
+			level := args[2]
+			switch level {
+			case "easy":
+				width = 6
+				height = 6
+				mines = 5
+			case "normal":
+				width = 8
+				height = 8
+				mines = 10
+			case "hard":
+				width = 8
+				height = 8
+				mines = 13
+			}
+		}
+	case 4:
+		width, _ = strconv.Atoi(args[1])
+		height, _ = strconv.Atoi(args[2])
+		mines, _ = strconv.Atoi(args[3])
+	}
+	message = c.Message().ID
+	topic = c.Message().ThreadID
+	user = c.Message().Sender.ID
+	chat = c.Message().Chat.ID
+	return
+}
+
+func (m *MineCommandExec) handleMineCallback(c telebot.Context) (
+	width,
+	height,
+	mines,
+	message,
+	topic int,
+	user,
+	chat int64) {
+
+	args := c.Args()
+	message = c.Callback().Message.ID
+	chat = c.Callback().Message.Chat.ID
+
+	switch len(args) {
+	case 4:
+		action := args[1]
+		switch action {
+		case "classic":
+			width = 8
+			height = 8
+			mines = 10
+		case "random":
+			width = helper.Num(3, 8)
+			height = helper.Num(3, 8)
+			density := helper.RandomDensity(0.15, 0.25, func(f float64) float64 {
+				if f > 0.7 {
+					return 0.3 * f
+				} else if f < 0.2 {
+					return 2.5 * f
+				}
+				return f
+			})
+			mines = int(float64(width*height) * density)
+		}
+		user, _ = strconv.ParseInt(args[2], 10, 64)
+		topic, _ = strconv.Atoi(args[3])
+	case 5:
+		action := args[1]
+		switch action {
+		case "level":
+			level := args[2]
+			switch level {
+			case "easy":
+				width = 6
+				height = 6
+				mines = 5
+			case "normal":
+				width = 8
+				height = 8
+				mines = 10
+			case "hard":
+				width = 8
+				height = 8
+				mines = 13
+			}
+		}
+		user, _ = strconv.ParseInt(args[3], 10, 64)
+		topic, _ = strconv.Atoi(args[4])
+	case 6:
+		width, _ = strconv.Atoi(args[1])
+		height, _ = strconv.Atoi(args[2])
+		mines, _ = strconv.Atoi(args[3])
+		user, _ = strconv.ParseInt(args[4], 10, 64)
+		topic, _ = strconv.Atoi(args[5])
+	}
+	return
+}
+
+func (m *MineCommandExec) Click(c telebot.Context) error {
+	var (
+		args = c.Args()
+		user int64
+	)
+	if c.Message() == nil {
+		user = c.Message().Sender.ID
+	} else {
+		user, _ = strconv.ParseInt(args[4], 10, 64)
+	}
+	id := args[1]
+	x, _ := strconv.Atoi(args[2])
+	y, _ := strconv.Atoi(args[3])
+	return m.click(id, user, x, y)
+}
+
+func (m *MineCommandExec) Flag(c telebot.Context) error {
+	var (
+		args = c.Args()
+		user int64
+	)
+	if c.Message() == nil {
+		user = c.Message().Sender.ID
+	} else {
+		user, _ = strconv.ParseInt(args[4], 10, 64)
+	}
+	id := args[1]
+	x, _ := strconv.Atoi(args[2])
+	y, _ := strconv.Atoi(args[3])
+	return m.flag(id, user, x, y)
+}
+
+func (m *MineCommandExec) Change(c telebot.Context) error {
+	var (
+		args = c.Args()
+		user int64
+	)
+	if c.Message() == nil {
+		user = c.Message().Sender.ID
+	} else {
+		user, _ = strconv.ParseInt(args[4], 10, 64)
+	}
+	id := args[1]
+	return m.change(id, user)
+}
+
+func (m *MineCommandExec) Rollback(c telebot.Context) error {
+	var (
+		args = c.Args()
+		user int64
+	)
+	if c.Message() == nil {
+		user = c.Message().Sender.ID
+	} else {
+		user, _ = strconv.ParseInt(args[4], 10, 64)
+	}
+	id := args[1]
+	return m.rollback(id, user)
+}
+
+func (m *MineCommandExec) Quit(c telebot.Context) error {
+	var (
+		args = c.Args()
+		user int64
+	)
+	if c.Message() == nil {
+		user = c.Message().Sender.ID
+	} else {
+		user, _ = strconv.ParseInt(args[4], 10, 64)
+	}
+	id := args[1]
+	return m.quit(id, user)
+}
+
+func (m *MineCommandExec) mine(width, height, mines, message, topic int, user, chat int64, locale string, t mine.GameType) error {
 	err := m.id.WithID(func(id string) error {
 		game, err := m.factory.Empty(id, user, mine.Additional{
 			Type:    t,
@@ -69,16 +298,15 @@ func (m *MineCommandExec) Mine(width, height, mines, message, topic int, user, c
 	return nil
 }
 
-func (m *MineCommandExec) Dig(id string, x, y int) error {
+func (m *MineCommandExec) click(id string, user int64, x, y int) error {
 	if data, ok := m.repo.Get(id); ok {
-		game := data.(mine.Serialized)
+		game := data.(mine.Serialized).Deserialize()
+		if user != game.UserID() {
+			return nil
+		}
+		game = game.OnClicked(mine.Position{X: x, Y: y})
 
-		game = game.
-			Deserialize().
-			OnClicked(mine.Position{X: x, Y: y}).
-			Serialize()
-
-		if !m.repo.Put(id, game) {
+		if !m.repo.Put(id, game.Serialize()) {
 			return errors.New("put repo failed")
 		}
 		return nil
@@ -86,16 +314,15 @@ func (m *MineCommandExec) Dig(id string, x, y int) error {
 	return nil
 }
 
-func (m *MineCommandExec) Flag(id string, x, y int) error {
+func (m *MineCommandExec) flag(id string, user int64, x, y int) error {
 	if data, ok := m.repo.Get(id); ok {
-		game := data.(mine.Serialized)
+		game := data.(mine.Serialized).Deserialize()
+		if user != game.UserID() {
+			return nil
+		}
+		game = game.OnFlagged(mine.Position{X: x, Y: y})
 
-		game = game.
-			Deserialize().
-			OnFlagged(mine.Position{X: x, Y: y}).
-			Serialize()
-
-		if !m.repo.Put(id, game) {
+		if !m.repo.Put(id, game.Serialize()) {
 			return errors.New("put repo failed")
 		}
 		return nil
@@ -103,11 +330,15 @@ func (m *MineCommandExec) Flag(id string, x, y int) error {
 	return nil
 }
 
-func (m *MineCommandExec) Change(id string) error {
+func (m *MineCommandExec) change(id string, user int64) error {
 	if data, ok := m.repo.Get(id); ok {
 		serialized := data.(mine.Serialized)
 
 		game := serialized.Deserialize()
+
+		if user != game.UserID() {
+			return nil
+		}
 
 		info := game.Infos()
 		var button mine.Button
@@ -134,16 +365,29 @@ func (m *MineCommandExec) Change(id string) error {
 	return nil
 }
 
-func (m *MineCommandExec) Rollback(id string) error {
+func (m *MineCommandExec) rollback(id string, user int64) error {
 	if data, ok := m.repo.Get(id); ok {
-		game := data.(mine.Serialized)
+		game := data.(mine.Serialized).Deserialize()
+		if user != game.UserID() {
+			return nil
+		}
+		game = game.OnRollback(1)
 
-		game = game.
-			Deserialize().
-			OnRollback(1).
-			Serialize()
+		if !m.repo.Put(id, game.Serialize()) {
+			return errors.New("put repo failed")
+		}
+		return nil
+	}
+	return nil
+}
 
-		if !m.repo.Put(id, game) {
+func (m *MineCommandExec) quit(id string, user int64) error {
+	if data, ok := m.repo.Get(id); ok {
+		game := data.(mine.Serialized).Deserialize()
+		if user != game.UserID() {
+			return nil
+		}
+		if !m.repo.Del(id) {
 			return errors.New("put repo failed")
 		}
 		return nil

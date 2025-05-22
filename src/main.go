@@ -1,21 +1,39 @@
 package main
 
 import (
-	"fmt"
+	"gopkg.in/telebot.v4"
+	"log"
+	"ocha_server_bot/src/command"
+	"ocha_server_bot/src/helper"
+	"os"
+	"time"
 )
 
-//TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
-// the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.</p>
-
 func main() {
-	//TIP <p>Press <shortcut actionId="ShowIntentionActions"/> when your caret is at the underlined text
-	// to see how GoLand suggests fixing the warning.</p><p>Alternatively, if available, click the lightbulb to view possible fixes.</p>
-	s := "gopher"
-	fmt.Println("Hello and welcome, %s!", s)
-
-	for i := 1; i <= 5; i++ {
-		//TIP <p>To start your debugging session, right-click your code in the editor and select the Debug option.</p> <p>We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-		// for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.</p>
-		fmt.Println("i =", 100/i)
+	token := os.Getenv("BOT_TOKEN")
+	log.Printf("Bot starting with Token(token=%s)", token)
+	pref := telebot.Settings{
+		Token:  token,
+		Poller: &telebot.LongPoller{Timeout: 10 * time.Second},
+		OnError: func(err error, context telebot.Context) {
+			log.Printf("Bot error: %v (in context: %v)", err, context.Text())
+		},
 	}
+	bot, err := telebot.NewBot(pref)
+	if err != nil {
+		log.Panicf("Error create bot: %v", err)
+	}
+	mine := command.NewMineCommandExec(helper.NewMemRepo())
+	help := command.HelpCommandExec{}
+	bot.Handle("/mine", mine.Mine)
+	bot.Handle("/flag", mine.Flag)
+	bot.Handle("/back", mine.Rollback)
+	bot.Handle("/quit", mine.Quit)
+	bot.Handle("/click", mine.Click)
+	bot.Handle("/change", mine.Change)
+
+	bot.Handle("/help", help.Help)
+
+	log.Println("Bot started")
+	bot.Start()
 }
