@@ -1,6 +1,7 @@
 package mine
 
 import (
+	"gopkg.in/telebot.v4"
 	"strconv"
 	"time"
 )
@@ -25,6 +26,7 @@ type Mine interface {
 	OnInfoChanged(additional Additional) Mine
 
 	Serialize() Serialized
+	Display(c telebot.Context) error
 }
 
 type Serialized struct {

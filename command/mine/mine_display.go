@@ -7,7 +7,7 @@ import (
 )
 
 type Display interface {
-	Display() error
+	Display(c telebot.Context) error
 }
 
 func (t TelegramMineGame) Display(c telebot.Context) error {
