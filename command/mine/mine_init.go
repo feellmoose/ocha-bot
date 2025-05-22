@@ -140,7 +140,7 @@ func (f Factory) Init(empty TelegramMineGame, x, y int) (TelegramMineGame, error
 
 	filtered := make([]int, 0, total)
 	for _, idx := range indices {
-		if safe[idx] != struct{}{} {
+		if _, ok := safe[idx]; !ok {
 			filtered = append(filtered, idx)
 		}
 	}
