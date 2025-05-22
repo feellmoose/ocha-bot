@@ -210,7 +210,15 @@ func (m *MineCommandExec) click(id string, user int64, x, y int, c telebot.Conte
 		if user != game.UserID() {
 			return nil
 		}
-		game = game.OnClicked(mine.Position{X: x, Y: y})
+		if game.Status() == mine.UnInit {
+			var err error
+			game, err = m.factory.Init(game.(mine.TelegramMineGame), x, y)
+			if err != nil {
+				return err
+			}
+		} else {
+			game = game.OnClicked(mine.Position{X: x, Y: y})
+		}
 
 		if !m.repo.Put(id, game.Serialize()) {
 			return errors.New("put repo failed")

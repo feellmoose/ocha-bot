@@ -193,13 +193,13 @@ func clickedZero(width, height int, from Position, boxes [][]int) []History {
 func (t TelegramMineGame) OnFlagged(pos Position) Mine {
 
 	game := t.data
-	if !pos.InBounds(game.width, game.height) {
+	if !pos.InBounds(game.width, game.height) || game.win || game.status != Running {
 		return t
 	}
 
 	box := Box{game.boxes[pos.X][pos.Y]}
 
-	if game.win || box.IsClicked() || game.status != Running {
+	if box.IsClicked() {
 		return t
 	}
 
