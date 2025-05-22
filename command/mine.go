@@ -82,8 +82,8 @@ func (m *MineCommandExec) handleMineMessage(c telebot.Context) (
 
 	args := c.Args()
 	switch len(args) {
-	case 2:
-		action := args[1]
+	case 1:
+		action := args[0]
 		switch action {
 		case "classic":
 			width = 8
@@ -102,11 +102,11 @@ func (m *MineCommandExec) handleMineMessage(c telebot.Context) (
 			})
 			mines = int(float64(width*height) * density)
 		}
-	case 3:
-		action := args[1]
+	case 2:
+		action := args[0]
 		switch action {
 		case "level":
-			level := args[2]
+			level := args[1]
 			switch level {
 			case "easy":
 				width = 6
@@ -123,9 +123,9 @@ func (m *MineCommandExec) handleMineMessage(c telebot.Context) (
 			}
 		}
 	case 4:
-		width, _ = strconv.Atoi(args[1])
-		height, _ = strconv.Atoi(args[2])
-		mines, _ = strconv.Atoi(args[3])
+		width, _ = strconv.Atoi(args[0])
+		height, _ = strconv.Atoi(args[1])
+		mines, _ = strconv.Atoi(args[2])
 	}
 	message = c.Message().ID
 	topic = c.Message().ThreadID
@@ -148,8 +148,8 @@ func (m *MineCommandExec) handleMineCallback(c telebot.Context) (
 	chat = c.Callback().Message.Chat.ID
 
 	switch len(args) {
-	case 4:
-		action := args[1]
+	case 3:
+		action := args[0]
 		switch action {
 		case "classic":
 			width = 8
@@ -168,13 +168,13 @@ func (m *MineCommandExec) handleMineCallback(c telebot.Context) (
 			})
 			mines = int(float64(width*height) * density)
 		}
-		user, _ = strconv.ParseInt(args[2], 10, 64)
-		topic, _ = strconv.Atoi(args[3])
-	case 5:
-		action := args[1]
+		user, _ = strconv.ParseInt(args[1], 10, 64)
+		topic, _ = strconv.Atoi(args[2])
+	case 4:
+		action := args[0]
 		switch action {
 		case "level":
-			level := args[2]
+			level := args[1]
 			switch level {
 			case "easy":
 				width = 6
@@ -190,14 +190,14 @@ func (m *MineCommandExec) handleMineCallback(c telebot.Context) (
 				mines = 13
 			}
 		}
+		user, _ = strconv.ParseInt(args[2], 10, 64)
+		topic, _ = strconv.Atoi(args[3])
+	case 5:
+		width, _ = strconv.Atoi(args[0])
+		height, _ = strconv.Atoi(args[1])
+		mines, _ = strconv.Atoi(args[2])
 		user, _ = strconv.ParseInt(args[3], 10, 64)
 		topic, _ = strconv.Atoi(args[4])
-	case 6:
-		width, _ = strconv.Atoi(args[1])
-		height, _ = strconv.Atoi(args[2])
-		mines, _ = strconv.Atoi(args[3])
-		user, _ = strconv.ParseInt(args[4], 10, 64)
-		topic, _ = strconv.Atoi(args[5])
 	}
 	return
 }
@@ -210,11 +210,11 @@ func (m *MineCommandExec) Click(c telebot.Context) error {
 	if c.Message() == nil {
 		user = c.Message().Sender.ID
 	} else {
-		user, _ = strconv.ParseInt(args[4], 10, 64)
+		user, _ = strconv.ParseInt(args[3], 10, 64)
 	}
-	id := args[1]
-	x, _ := strconv.Atoi(args[2])
-	y, _ := strconv.Atoi(args[3])
+	id := args[0]
+	x, _ := strconv.Atoi(args[1])
+	y, _ := strconv.Atoi(args[2])
 	return m.click(id, user, x, y)
 }
 
@@ -226,11 +226,11 @@ func (m *MineCommandExec) Flag(c telebot.Context) error {
 	if c.Message() == nil {
 		user = c.Message().Sender.ID
 	} else {
-		user, _ = strconv.ParseInt(args[4], 10, 64)
+		user, _ = strconv.ParseInt(args[3], 10, 64)
 	}
-	id := args[1]
-	x, _ := strconv.Atoi(args[2])
-	y, _ := strconv.Atoi(args[3])
+	id := args[0]
+	x, _ := strconv.Atoi(args[1])
+	y, _ := strconv.Atoi(args[2])
 	return m.flag(id, user, x, y)
 }
 
@@ -242,9 +242,9 @@ func (m *MineCommandExec) Change(c telebot.Context) error {
 	if c.Message() == nil {
 		user = c.Message().Sender.ID
 	} else {
-		user, _ = strconv.ParseInt(args[4], 10, 64)
+		user, _ = strconv.ParseInt(args[1], 10, 64)
 	}
-	id := args[1]
+	id := args[0]
 	return m.change(id, user)
 }
 
@@ -256,9 +256,9 @@ func (m *MineCommandExec) Rollback(c telebot.Context) error {
 	if c.Message() == nil {
 		user = c.Message().Sender.ID
 	} else {
-		user, _ = strconv.ParseInt(args[4], 10, 64)
+		user, _ = strconv.ParseInt(args[1], 10, 64)
 	}
-	id := args[1]
+	id := args[0]
 	return m.rollback(id, user)
 }
 
@@ -270,9 +270,9 @@ func (m *MineCommandExec) Quit(c telebot.Context) error {
 	if c.Message() == nil {
 		user = c.Message().Sender.ID
 	} else {
-		user, _ = strconv.ParseInt(args[4], 10, 64)
+		user, _ = strconv.ParseInt(args[1], 10, 64)
 	}
-	id := args[1]
+	id := args[0]
 	return m.quit(id, user)
 }
 
