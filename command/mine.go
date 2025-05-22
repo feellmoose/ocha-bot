@@ -219,9 +219,9 @@ func (m *MineCommandExec) click(id string, user int64, x, y int, c telebot.Conte
 			if err != nil {
 				return err
 			}
-		} else {
-			game = game.OnClicked(mine.Position{X: x, Y: y})
+
 		}
+		game = game.OnClicked(mine.Position{X: x, Y: y})
 
 		if !m.repo.Put(id, game.Serialize()) {
 			return errors.New("put repo failed")
@@ -311,7 +311,7 @@ func (m *MineCommandExec) quit(id string, user int64, c telebot.Context) error {
 			MessageID: strconv.Itoa(game.Infos().Message),
 			ChatID:    game.Infos().Chat},
 			"@"+c.Sender().Username+" Quit Success!",
-			telebot.RemoveKeyboard,
+			&telebot.ReplyMarkup{InlineKeyboard: make([][]telebot.InlineButton, 0)},
 		)
 		return err
 	}
