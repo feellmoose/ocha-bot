@@ -219,8 +219,8 @@ func (m *MineCommandExec) click(id string, user int64, x, y int, c telebot.Conte
 			if err != nil {
 				return err
 			}
-
 		}
+		log.Printf("click0init=%d", game.Status())
 		game = game.OnClicked(mine.Position{X: x, Y: y})
 
 		if !m.repo.Put(id, game.Serialize()) {
