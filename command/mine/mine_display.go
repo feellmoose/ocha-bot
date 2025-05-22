@@ -100,7 +100,7 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 				{
 					Unique: "mine",
 					Text:   helper.Messages[info.Locale]["mine.game.lose.button"].String(),
-					Data:   "10|10|8|" + strconv.FormatInt(t.UserID(), 10) + "|" + strconv.Itoa(info.Topic),
+					Data:   "8|8|10|" + strconv.FormatInt(t.UserID(), 10) + "|" + strconv.Itoa(info.Topic),
 				},
 			})
 		}
