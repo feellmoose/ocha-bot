@@ -158,7 +158,7 @@ func (t TelegramMineGame) endedButton(boxes [][]Box) [][]telebot.InlineButton {
 
 func (t TelegramMineGame) emptyButton(boxes [][]Box) [][]telebot.InlineButton {
 	var action string
-	if t.Infos().Button == BClick {
+	if t.Infos().Button == BFlag {
 		action = "flag"
 	} else {
 		action = "click"
@@ -195,7 +195,7 @@ func (t TelegramMineGame) emptyButton(boxes [][]Box) [][]telebot.InlineButton {
 
 func (t TelegramMineGame) runningButton(boxes [][]Box) [][]telebot.InlineButton {
 	var action string
-	if t.Infos().Button == BClick {
+	if t.Infos().Button == BFlag {
 		action = "flag"
 	} else {
 		action = "click"

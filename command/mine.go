@@ -173,14 +173,17 @@ func (m *MineCommandExec) Flag(c telebot.Context) error {
 }
 
 func (m *MineCommandExec) Change(c telebot.Context) error {
+	log.Printf("mine:change:args=%v", c.Args())
 	return m.change(c.Args()[0], c.Sender().ID, c)
 }
 
 func (m *MineCommandExec) Rollback(c telebot.Context) error {
+	log.Printf("mine:rollback:args=%v", c.Args())
 	return m.rollback(c.Args()[0], c.Sender().ID, c)
 }
 
 func (m *MineCommandExec) Quit(c telebot.Context) error {
+	log.Printf("mine:quit:args=%v", c.Args())
 	return m.quit(c.Args()[0], c.Sender().ID, c)
 }
 
