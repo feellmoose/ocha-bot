@@ -234,7 +234,7 @@ func (m *MineCommandExec) click(id string, user int64, x, y int, c telebot.Conte
 func (m *MineCommandExec) flag(id string, user int64, x, y int, c telebot.Context) error {
 	if data, ok := m.repo.Get(id); ok {
 		game := data.(mine.Serialized).Deserialize()
-		if user != game.UserID() {
+		if user != game.UserID() || game.Status() == mine.UnInit {
 			return nil
 		}
 		game = game.OnFlagged(mine.Position{X: x, Y: y})
