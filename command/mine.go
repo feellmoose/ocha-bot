@@ -3,7 +3,6 @@ package command
 import (
 	"errors"
 	"gopkg.in/telebot.v4"
-	"log"
 	"ocha_server_bot/command/mine"
 	"ocha_server_bot/helper"
 	"strconv"
@@ -55,9 +54,9 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 		user    int64
 		chat    int64
 	)
-	log.Printf("%v", c.Args())
-	if c.Message() != nil {
-		log.Printf("Message")
+	if c.Callback() != nil {
+		width, height, mines, message, topic, user, chat = m.handleMineCallback(c)
+	} else if c.Message() != nil {
 		args := c.Args()
 		switch len(args) {
 		case 0:
@@ -71,12 +70,7 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 		topic = c.Message().ThreadID
 		user = c.Message().Sender.ID
 		chat = c.Message().Chat.ID
-	} else if c.Callback() != nil {
-		log.Printf("Callback")
-		width, height, mines, message, topic, user, chat = m.handleMineCallback(c)
 	}
-	log.Printf("(width=%d,height=%d,mines=%d,message=%d,topic=%d,user=%d,chat=%d",
-		width, height, mines, message, topic, user, chat)
 	return m.mine(
 		width, height, mines,
 		message,
