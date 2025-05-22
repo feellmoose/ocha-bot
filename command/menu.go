@@ -35,11 +35,11 @@ func RedirectTo(c telebot.Context, args ...string) error {
 	case 1:
 		menu = args[0]
 		user = c.Sender().ID
-		topic = c.Topic().ThreadID
+		topic = c.Message().ThreadID
 	case 2:
 		menu, opt = args[0], args[1]
 		user = c.Sender().ID
-		topic = c.Topic().ThreadID
+		topic = c.Message().ThreadID
 	case 4:
 		menu, opt = args[0], args[1]
 		user, _ = strconv.ParseInt(args[2], 10, 64)
