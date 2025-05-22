@@ -23,7 +23,6 @@ func main() {
 		log.Panicf("Error create bot: %v", err)
 	}
 
-	bot.Use(middleware.Logger())
 	bot.Use(middleware.Recover())
 
 	mine := command2.NewMineCommandExec(helper.NewMemRepo())
