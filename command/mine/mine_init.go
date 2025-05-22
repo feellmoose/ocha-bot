@@ -126,14 +126,13 @@ func (f Factory) Init(empty TelegramMineGame, x, y int) (TelegramMineGame, error
 	total := width * height
 	indices := rand.Perm(total)
 
-	var safeSet map[int]struct{}
+	safe := make(map[int]struct{})
 	if x >= 0 && y >= 0 && x < width && y < height {
-		safeSet = make(map[int]struct{})
 		for dx := -1; dx <= 1; dx++ {
 			for dy := -1; dy <= 1; dy++ {
 				nx, ny := x+dx, y+dy
 				if nx >= 0 && ny >= 0 && nx < width && ny < height {
-					safeSet[nx*height+ny] = struct{}{}
+					safe[nx*height+ny] = struct{}{}
 				}
 			}
 		}
@@ -141,10 +140,9 @@ func (f Factory) Init(empty TelegramMineGame, x, y int) (TelegramMineGame, error
 
 	filtered := make([]int, 0, total)
 	for _, idx := range indices {
-		if safeSet == nil || safeSet[idx] == struct{}{} {
-			continue
+		if safe[idx] != struct{}{} {
+			filtered = append(filtered, idx)
 		}
-		filtered = append(filtered, idx)
 	}
 
 	if len(filtered) < mines {
