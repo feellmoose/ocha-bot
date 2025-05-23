@@ -6,14 +6,6 @@ import (
 	"strconv"
 )
 
-type Language string
-
-const (
-	en  Language = "en"
-	zh  Language = "zh"
-	cxg Language = "cxg"
-)
-
 type LanguageRepo struct {
 	repo Repo
 }
@@ -24,29 +16,29 @@ func NewLanguageRepo(repo Repo) *LanguageRepo {
 	}
 }
 
-func (r LanguageRepo) Lang(lang string) Language {
+func (r LanguageRepo) Lang(lang string) string {
 	switch lang {
 	case "en":
-		return en
+		return "en"
 	case "cxg":
-		return cxg
+		return "cxg"
 	case "zh":
-		return zh
+		return "zh"
 	default:
-		return en
+		return "en"
 	}
 }
 
 func (r LanguageRepo) Context(c telebot.Context) string {
 	user := strconv.FormatInt(c.Sender().ID, 10)
 	if lang, ok := r.repo.Get("us_" + user); ok {
-		return string(lang.(Language))
+		return lang.(string)
 	}
 	chat := strconv.FormatInt(c.Chat().ID, 10)
 	if lang, ok := r.repo.Get("ch_" + chat); ok {
-		return string(lang.(Language))
+		return lang.(string)
 	}
-	return string(r.Lang(c.Sender().LanguageCode))
+	return r.Lang(c.Sender().LanguageCode)
 }
 
 func (r LanguageRepo) SetChatLanguageIfAdminByContext(c telebot.Context, lang string) error {
@@ -80,24 +72,24 @@ func (r LanguageRepo) SetUserLanguageByContext(c telebot.Context, lang string) e
 	return nil
 }
 
-func (r LanguageRepo) userLanguage(user string) Language {
+func (r LanguageRepo) userLanguage(user string) string {
 	if lang, ok := r.repo.Get("us_" + user); ok {
-		return lang.(Language)
+		return lang.(string)
 	}
-	return en
+	return "en"
 }
 
-func (r LanguageRepo) setUserLanguage(user string, lang Language) bool {
+func (r LanguageRepo) setUserLanguage(user string, lang string) bool {
 	return r.repo.Put("us_"+user, lang)
 }
 
-func (r LanguageRepo) chatLanguage(chat string) Language {
+func (r LanguageRepo) chatLanguage(chat string) string {
 	if lang, ok := r.repo.Get("ch_" + chat); ok {
-		return lang.(Language)
+		return lang.(string)
 	}
-	return en
+	return "en"
 }
 
-func (r LanguageRepo) setChatLanguage(chat string, lang Language) bool {
+func (r LanguageRepo) setChatLanguage(chat string, lang string) bool {
 	return r.repo.Put("ch_"+chat, lang)
 }
