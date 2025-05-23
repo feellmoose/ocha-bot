@@ -143,8 +143,6 @@ type GameType string
 
 const (
 	ClassicBottom GameType = "Classic_Bottom"
-	RandomBottom  GameType = "Random_Bottom"
-	LevelBottom   GameType = "Level_Bottom"
 )
 
 type Button string

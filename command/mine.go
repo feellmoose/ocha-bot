@@ -3,6 +3,7 @@ package command
 import (
 	"errors"
 	"gopkg.in/telebot.v4"
+	"log"
 	"ocha_server_bot/command/mine"
 	"ocha_server_bot/helper"
 	"strconv"
@@ -46,6 +47,7 @@ func NewMineCommandExec(repo helper.Repo, langRepo *helper.LanguageRepo, menu *M
 }
 
 func (m *MineCommandExec) Mine(c telebot.Context) error {
+	log.Println("func (m *MineCommandExec) Mine(c telebot.Context) error")
 	var (
 		width   int
 		height  int
@@ -56,6 +58,8 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 		chat    int64
 	)
 	if c.Callback() != nil {
+
+		log.Println("is call back")
 
 		args := c.Args()
 		if len(args) != 5 {
@@ -69,6 +73,8 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 		mines, _ = strconv.Atoi(args[2])
 		user, _ = strconv.ParseInt(args[3], 10, 64)
 		topic, _ = strconv.Atoi(args[4])
+
+		log.Println("param resolve success")
 
 		if user != c.Sender().ID {
 			return nil
@@ -122,6 +128,7 @@ func (m *MineCommandExec) Quit(c telebot.Context) error {
 }
 
 func (m *MineCommandExec) mine(width, height, mines, message, topic int, user, chat int64, locale string, c telebot.Context) error {
+	log.Println("func (m *MineCommandExec) mine(width, height, mines, message...")
 	return m.id.WithID(func(id string) error {
 		game, err := m.factory.Empty(id, user, mine.Additional{
 			Type:    mine.ClassicBottom,
@@ -137,6 +144,7 @@ func (m *MineCommandExec) mine(width, height, mines, message, topic int, user, c
 		if !m.repo.Put(id, game.Serialize()) {
 			return errors.New("put repo failed")
 		}
+		log.Println("inner func id handle game displaying...")
 		return game.Display(c)
 	})
 }
