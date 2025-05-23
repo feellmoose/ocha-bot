@@ -1,7 +1,9 @@
 package mine
 
 import (
+	"fmt"
 	"github.com/go-playground/assert/v2"
+	"ocha_server_bot/helper"
 	"testing"
 )
 
@@ -51,4 +53,17 @@ func TestMineGameClick(t *testing.T) {
 	mine = mine.OnClicked(Position{X: 4, Y: 4}).(TelegramMineGame)
 	assert.Equal(t, mine.Status(), Running)
 	assert.Equal(t, mine.Boxes()[4][4].IsClicked(), true)
+}
+
+func TestSerialize(t *testing.T) {
+	repo := helper.NewFileRepo("", "test")
+	f := Factory{}
+	e, _ := f.Empty("id", 1, Additional{}, 1, 1, 1)
+	defer repo.Stop()
+	repo.Put("id", e.Serialize())
+	inter, ok := repo.Get("id")
+	assert.Equal(t, ok, true)
+	i := inter.(Serialized)
+	fmt.Printf("%v", i)
+	repo.Sync()
 }

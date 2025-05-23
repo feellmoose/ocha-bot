@@ -117,7 +117,8 @@ type FileRepo struct {
 
 func NewFileRepo(dir string, name string) *FileRepo {
 	var (
-		filename = filepath.Join(dir, name+"_data.json")
+		fn       = name + "_data.json"
+		filename = filepath.Join(dir, fn)
 		file     *os.File
 		err      error
 		data     sync.Map
@@ -159,9 +160,10 @@ func NewFileRepo(dir string, name string) *FileRepo {
 
 	repo := &FileRepo{
 		dir:     dir,
+		name:    fn,
 		data:    &data,
 		stop:    make(chan struct{}),
-		sticker: time.NewTicker(1 * time.Second),
+		sticker: time.NewTicker(5 * time.Second),
 	}
 
 	go repo.loop()
@@ -209,7 +211,7 @@ func (r *FileRepo) Sync() error {
 		return err
 	}
 
-	dst, err := os.Create(filepath.Join(r.dir, r.name+"_data.json"))
+	dst, err := os.Create(filepath.Join(r.dir, r.name))
 	if err != nil {
 		return err
 	}
