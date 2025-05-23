@@ -9,7 +9,7 @@ func RandomDensity(min, max float64, refactor func(float64) float64) float64 {
 	return max + (max-min)*refactor(random)
 }
 
-func Num(min, max int) int {
+func RandomNum(min, max int) int {
 	return rand.IntN(max-min+1) + min
 }
 

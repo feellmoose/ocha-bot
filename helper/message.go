@@ -28,80 +28,43 @@ func (t Template) Execute(data any) (string, error) {
 
 var templates = map[string]map[string]string{
 	"en": {
-		"mine.game.start.note": `@{{ .Username }}
-Hey there! 👋 Thanks for choosing ocha server!
-You have started a new {{ .Width }} × {{ .Height }} game with {{ .Mines }} mines.`,
-		"mine.game.start.button": `Click to Start`,
-		"mine.game.win.note": `@{{ .Username }}
-Congratulations! 🎉
-You've successfully completed the mine sweeper game in {{ .Seconds }} seconds.
-Map Dimensions: {{ .Width }} × {{ .Height }}
-Number of Mines: {{ .Mines }}
-Well done on your achievement!`,
-		"mine.game.win.button": `Try again?`,
-		"mine.game.lose.note": `@{{ .Username }}
-Boom! 💣
-Unfortunately, you hit a mine and the game has ended.
-Time Elapsed: {{ .Seconds }} seconds.
-Map Dimensions: {{ .Width }} × {{ .Height }}
-Number of Mines: {{ .Mines }}
-Better luck next time!`,
-		"mine.game.lose.button": `Try again?`,
-		"mine.game.opt.quit":    `Quit`,
-		"mine.game.opt.flag":    `Flag`,
-		"mine.game.opt.click":   `Click`,
-		"mine.game.error":       `@{{ .Username }} Oops! Something went wrong! {{.Message}}!`,
-		"mine.help": `@{{ .Username }}
-Hey there! 👋 Thanks for choosing ocha server!
-Here's a list of commands to get you started:
-
-/mine [&lt;width&gt; &lt;height&gt; &lt;mine&gt;]
-/help
-
-<blockquote>
-ocha bot created by @feellmoose_dev
-Version {{.Version}}
-Last update at {{.Update}}
-</blockquote>`,
+		"menu.back.button":             "Back",
+		"menu.cancel.button":           "Cancel",
+		"mine.game.menu.note":          "@{{ .Username }}\nWelcome to the entertainment service provided by ocha. You can start a Minesweeper game using this menu.\nPlease click the button below to select a difficulty level.",
+		"mine.game.menu.easy.button":   "Easy",
+		"mine.game.menu.normal.button": "Normal",
+		"mine.game.menu.hard.button":   "Hard",
+		"mine.game.menu.random.button": "Random",
+		"mine.game.start.note":         "@{{ .Username }}\nWelcome to the entertainment service provided by ocha. You have started a new {{ .Width }} × {{ .Height }} Minesweeper map.\nThere are {{ .Mines }} mines in total.",
+		"mine.game.start.button":       "Click to Start",
+		"mine.game.win.note":           "@{{ .Username }}\nCongratulations! 🎉\nYou successfully completed the game in {{ .Seconds }} seconds.\nMap size: {{ .Width }} × {{ .Height }}\nNumber of mines: {{ .Mines }}",
+		"mine.game.win.button":         "Play Again",
+		"mine.game.lose.note":          "@{{ .Username }}\nBoom! 💣\nTime taken: {{ .Seconds }} seconds.\nMap size: {{ .Width }} × {{ .Height }}\nNumber of mines: {{ .Mines }}",
+		"mine.game.lose.button":        "Try Again",
+		"mine.game.opt.quit":           "Exit",
+		"mine.game.opt.flag":           "Flag",
+		"mine.game.opt.click":          "Sweep",
+		"mine.game.error":              "@{{ .Username }} Oops! Something went wrong! {{.Message}}!",
+		"mine.help":                    "@{{ .Username }}\nWelcome to ocha!\nHere are some commands to help you get started:\n\n/mine <width> <height> <number of mines>\n/help\n\n<blockquote>\nocha bot\nAuthor: @feellmoose_dev\nVersion: {{.Version}}\nUpdated on: {{.Update}}\n</blockquote>",
 	},
 	"zh": {
-		"mine.game.start.note": `@{{ .Username }}
-您好！我是为您提供本次服务的ocha服务生！
-您已开始一个新的 {{ .Width }} × {{ .Height }} 扫雷地图
-共有 {{ .Mines }} 个地雷`,
-		"mine.game.start.button": `点击开始`,
-		"mine.game.win.note": `@{{ .Username }}
-恭喜！🎉
-您成功在 {{ .Seconds }} 秒内完成了游戏。
-地图尺寸：{{ .Width }} × {{ .Height }}
-地雷数量：{{ .Mines }}
-干得漂亮！`,
-		"mine.game.win.button": `再来一局`,
-		"mine.game.lose.note": `@{{ .Username }}
-砰！💣
-很遗憾，您踩到了地雷，游戏结束。
-耗时：{{ .Seconds }} 秒。
-地图尺寸：{{ .Width }} × {{ .Height }}
-地雷数量：{{ .Mines }}
-祝您下次好运！`,
-		"mine.game.lose.button": `再试一次`,
-		"mine.game.opt.quit":    `退出`,
-		"mine.game.opt.flag":    `切换\插旗`,
-		"mine.game.opt.click":   `切换\扫雷`,
-		"mine.game.error":       `@{{ .Username }} 哎呀！出了点问题！{{.Message}}！`,
-		"mine.help": `@{{ .Username }}
-感谢您使用ocha server！
-以下是一些帮助您入门的命令：
-
-/mine [&lt;宽度&gt; &lt;高度&gt; &lt;地雷数&gt;]
-/help
-
-<blockquote>
-ocha bot
-作者: @feellmoose_dev
-版本信息:{{.Version}}
-更新于:{{.Update}}
-</blockquote>`,
+		"menu.back.button":             "返回",
+		"menu.cancel.button":           "取消",
+		"mine.game.menu.note":          "@{{ .Username }}\n欢迎使用 ocha 为您提供的娱乐服务，您可以通过此菜单开始一个扫雷游戏。\n请点击下面的按钮选择难度",
+		"mine.game.menu.easy.button":   "简单",
+		"mine.game.menu.normal.button": "普通",
+		"mine.game.menu.hard.button":   "困难",
+		"mine.game.menu.random.button": "随机",
+		"mine.game.start.note":         "@{{ .Username }}\n欢迎使用 ocha 为您提供的娱乐服务，您已开始一个新的 {{ .Width }} × {{ .Height }} 扫雷地图。\n共有 {{ .Mines }} 个地雷",
+		"mine.game.start.button":       "点击开始",
+		"mine.game.win.note":           "@{{ .Username }}\n恭喜！🎉\n您成功在 {{ .Seconds }} 秒内完成了游戏。\n地图尺寸：{{ .Width }} × {{ .Height }}\n地雷数量：{{ .Mines }}",
+		"mine.game.win.button":         "再来一局",
+		"mine.game.lose.note":          "@{{ .Username }}\n砰！💣\n耗时：{{ .Seconds }} 秒。\n地图尺寸：{{ .Width }} × {{ .Height }}\n地雷数量：{{ .Mines }}",
+		"mine.game.lose.button":        "再试一次",
+		"mine.game.opt.quit":           "退出",
+		"mine.game.opt.flag":           "插旗",
+		"mine.game.opt.click":          "扫雷",
+		"mine.game.error":              "@{{ .Username }} 哎呀！出了点问题！{{.Message}}！`,\n\t\t\"mine.help\": `@{{ .Username }}\n欢迎使用 ocha ！\n以下是一些帮助您入门的命令：\n\n/mine [&lt;宽度&gt; &lt;高度&gt; &lt;地雷数&gt;]\n/help\n\n<blockquote>\nocha bot\n作者: @feellmoose_dev\n版本信息:{{.Version}}\n更新于:{{.Update}}\n</blockquote>",
 	},
 }
 

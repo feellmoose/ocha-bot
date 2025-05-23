@@ -3,7 +3,6 @@ package command
 import (
 	"errors"
 	"gopkg.in/telebot.v4"
-	"log"
 	"ocha_server_bot/command/mine"
 	"ocha_server_bot/helper"
 	"strconv"
@@ -21,9 +20,6 @@ type MineCommandFunc interface {
 
 /*
 /mine [][][]      user topic {length = 4,6}
-/mine level    [] user topic {length = 3,5} level
-/mine random      user topic {length = 2,4} random
-/mine classic     user topic {length = 2,4} classic
 /click  game [][]
 /flag   game [][]
 /back   game
@@ -56,13 +52,25 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 		chat    int64
 	)
 	if c.Callback() != nil {
-		width, height, mines, message, topic, user, chat = m.handleMineCallback(c)
+
+		args := c.Args()
+		if len(args) != 5 {
+			return errors.New("mine callback args len != 5")
+		}
+
+		message = c.Callback().Message.ID
+		chat = c.Callback().Message.Chat.ID
+		width, _ = strconv.Atoi(args[0])
+		height, _ = strconv.Atoi(args[1])
+		mines, _ = strconv.Atoi(args[2])
+		user, _ = strconv.ParseInt(args[3], 10, 64)
+		topic, _ = strconv.Atoi(args[4])
+
 		if user != c.Sender().ID {
 			return nil
 		}
 	} else if c.Message() != nil {
 		args := c.Args()
-		log.Printf("mine:message:args=%v", args)
 		switch len(args) {
 		case 0:
 			return RedirectTo(c, "mine")
@@ -70,11 +78,8 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 			width, _ = strconv.Atoi(args[0])
 			height, _ = strconv.Atoi(args[1])
 			mines, _ = strconv.Atoi(args[2])
+			return RedirectToButtonClassic(width, height, mines, c)
 		}
-		message = c.Message().ID
-		topic = c.Message().ThreadID
-		user = c.Message().Sender.ID
-		chat = c.Message().Chat.ID
 	}
 	return m.mine(
 		width, height, mines,
@@ -86,79 +91,8 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 		c)
 }
 
-func (m *MineCommandExec) handleMineCallback(c telebot.Context) (
-	width,
-	height,
-	mines,
-	message,
-	topic int,
-	user,
-	chat int64) {
-
-	args := c.Args()
-	message = c.Callback().Message.ID
-	chat = c.Callback().Message.Chat.ID
-
-	log.Printf("mine:callback:args=%v", args)
-
-	switch len(args) {
-	case 3:
-		action := args[0]
-		switch action {
-		case "classic":
-			width = 8
-			height = 8
-			mines = 10
-		case "random":
-			width = helper.Num(3, 8)
-			height = helper.Num(3, 8)
-			density := helper.RandomDensity(0.15, 0.25, func(f float64) float64 {
-				if f > 0.7 {
-					return 0.3 * f
-				} else if f < 0.2 {
-					return 2.5 * f
-				}
-				return f
-			})
-			mines = int(float64(width*height) * density)
-		}
-		user, _ = strconv.ParseInt(args[1], 10, 64)
-		topic, _ = strconv.Atoi(args[2])
-	case 4:
-		action := args[0]
-		switch action {
-		case "level":
-			level := args[1]
-			switch level {
-			case "easy":
-				width = 6
-				height = 6
-				mines = 5
-			case "normal":
-				width = 8
-				height = 8
-				mines = 10
-			case "hard":
-				width = 8
-				height = 8
-				mines = 13
-			}
-		}
-		user, _ = strconv.ParseInt(args[2], 10, 64)
-		topic, _ = strconv.Atoi(args[3])
-	case 5:
-		width, _ = strconv.Atoi(args[0])
-		height, _ = strconv.Atoi(args[1])
-		mines, _ = strconv.Atoi(args[2])
-		user, _ = strconv.ParseInt(args[3], 10, 64)
-		topic, _ = strconv.Atoi(args[4])
-	}
-	return
-}
-
 func (m *MineCommandExec) Click(c telebot.Context) error {
 	args := c.Args()
-	log.Printf("mine:click:args=%v", args)
 	x, _ := strconv.Atoi(args[1])
 	y, _ := strconv.Atoi(args[2])
 	return m.click(args[0], c.Sender().ID, x, y, c)
@@ -166,24 +100,20 @@ func (m *MineCommandExec) Click(c telebot.Context) error {
 
 func (m *MineCommandExec) Flag(c telebot.Context) error {
 	args := c.Args()
-	log.Printf("mine:flag:args=%v", args)
 	x, _ := strconv.Atoi(args[1])
 	y, _ := strconv.Atoi(args[2])
 	return m.flag(args[0], c.Sender().ID, x, y, c)
 }
 
 func (m *MineCommandExec) Change(c telebot.Context) error {
-	log.Printf("mine:change:args=%v", c.Args())
 	return m.change(c.Args()[0], c.Sender().ID, c)
 }
 
 func (m *MineCommandExec) Rollback(c telebot.Context) error {
-	log.Printf("mine:rollback:args=%v", c.Args())
 	return m.rollback(c.Args()[0], c.Sender().ID, c)
 }
 
 func (m *MineCommandExec) Quit(c telebot.Context) error {
-	log.Printf("mine:quit:args=%v", c.Args())
 	return m.quit(c.Args()[0], c.Sender().ID, c)
 }
 
@@ -220,7 +150,6 @@ func (m *MineCommandExec) click(id string, user int64, x, y int, c telebot.Conte
 				return err
 			}
 		}
-		log.Printf("click0init=%d", game.Status())
 		game = game.OnClicked(mine.Position{X: x, Y: y})
 
 		if !m.repo.Put(id, game.Serialize()) {

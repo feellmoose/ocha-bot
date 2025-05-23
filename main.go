@@ -44,6 +44,7 @@ func main() {
 	bot.Handle("/help", help.Help)
 
 	bot.Handle("/menu", menu.Menu)
+	bot.Handle("\fmenu", menu.Menu)
 
 	log.Println("Bot started")
 	bot.Start()
