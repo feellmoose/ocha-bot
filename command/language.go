@@ -25,16 +25,36 @@ func NewLanguageCommandExec(repo *helper.LanguageRepo) *LanguageCommandExec {
 
 func (l LanguageCommandExec) Language(c telebot.Context) error {
 	if len(c.Args()) == 1 {
-		return l.repo.SetUserLanguageByContext(c, c.Args()[0])
+		if err := l.repo.SetUserLanguageByContext(c, c.Args()[0]); err != nil {
+			return err
+		}
 	} else {
-		return l.repo.SetUserLanguageByContext(c, "en")
+		if err := l.repo.SetUserLanguageByContext(c, "en"); err != nil {
+			return err
+		}
 	}
+	lang := l.repo.Context(c)
+	text, err := helper.Messages[lang]["language.note"].Execute(map[string]string{"Username": c.Sender().Username})
+	if err != nil {
+		return err
+	}
+	return c.Send(text)
 }
 
 func (l LanguageCommandExec) LanguageChat(c telebot.Context) error {
 	if len(c.Args()) == 1 {
-		return l.repo.SetChatLanguageIfAdminByContext(c, c.Args()[0])
+		if err := l.repo.SetChatLanguageIfAdminByContext(c, c.Args()[0]); err != nil {
+			return err
+		}
 	} else {
-		return l.repo.SetChatLanguageIfAdminByContext(c, "en")
+		if err := l.repo.SetChatLanguageIfAdminByContext(c, "en"); err != nil {
+			return err
+		}
 	}
+	lang := l.repo.Context(c)
+	text, err := helper.Messages[lang]["language.note"].Execute(map[string]string{"Username": c.Sender().Username})
+	if err != nil {
+		return err
+	}
+	return c.Send(text)
 }

@@ -28,6 +28,7 @@ func (t Template) Execute(data any) (string, error) {
 
 var templates = map[string]map[string]string{
 	"en": {
+		"language.note":                   "@{{ .Username }} Changed language success",
 		"menu.back.button":                "Back",
 		"menu.cancel.button":              "Cancel",
 		"mine.game.menu.note":             "@{{ .Username }}\nWelcome to the entertainment service provided by ocha. You can start a Minesweeper game using this menu.\nPlease click the button below to select a difficulty level.",
@@ -46,9 +47,10 @@ var templates = map[string]map[string]string{
 		"mine.game.opt.flag":              "Flag",
 		"mine.game.opt.click":             "Sweep",
 		"mine.game.error":                 "@{{ .Username }} Oops! Something went wrong! {{.Message}}!",
-		"mine.help":                       "@{{ .Username }}\nWelcome to ocha!\nHere are some commands to help you get started:\n\n/mine &lt;width&gt; &lt;height&gt; &lt;number of mines&gt;\n/help\n\n<blockquote>\nocha bot\nAuthor: @feellmoose_dev\nVersion: {{.Version}}\nUpdated on: {{.Update}}\n</blockquote>",
+		"help.note":                       "@{{ .Username }}\nWelcome to ocha!\nHere are some commands to help you get started:\n\n/mine &lt;width&gt; &lt;height&gt; &lt;number of mines&gt;\n/help\n\n<blockquote>\nocha bot\nAuthor: @feellmoose_dev\nVersion: {{.Version}}\nUpdated on: {{.Update}}\n</blockquote>",
 	},
 	"zh": {
+		"language.note":                   "@{{ .Username }} 修改语言成功",
 		"menu.back.button":                "返回",
 		"menu.cancel.button":              "取消",
 		"mine.game.menu.note":             "@{{ .Username }}\n欢迎使用 ocha 为您提供的娱乐服务，您可以通过此菜单开始一个扫雷游戏。\n请点击下面的按钮选择难度",
@@ -67,7 +69,7 @@ var templates = map[string]map[string]string{
 		"mine.game.opt.flag":              "插旗",
 		"mine.game.opt.click":             "扫雷",
 		"mine.game.error":                 "@{{ .Username }} 哎呀！出了点问题！{{.Message}}！",
-		"mine.help":                       "@{{ .Username }}\n欢迎使用 ocha ！\n以下是一些帮助您入门的命令：\n\n/mine &lt;宽度&gt; &lt;高度&gt; &lt;地雷数&gt;/help\n\n<blockquote>\nocha bot\n作者: @feellmoose_dev\n版本信息:{{.Version}}\n更新于:{{.Update}}\n</blockquote>",
+		"help.note":                       "@{{ .Username }}\n欢迎使用 ocha ！\n以下是一些帮助您入门的命令：\n\n/mine &lt;宽度&gt; &lt;高度&gt; &lt;地雷数&gt;/help\n\n<blockquote>\nocha bot\n作者: @feellmoose_dev\n版本信息:{{.Version}}\n更新于:{{.Update}}\n</blockquote>",
 	},
 }
 

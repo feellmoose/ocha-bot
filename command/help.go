@@ -28,7 +28,7 @@ var Update = time.Now().String()
 
 func (h HelpCommandExec) Help(c telebot.Context) error {
 	lang := h.repo.Context(c)
-	text, err := helper.Messages[lang]["mine.help"].Execute(map[string]string{
+	text, err := helper.Messages[lang]["help.note"].Execute(map[string]string{
 		"Username": c.Sender().Username,
 		"Version":  Version,
 		"Update":   Update,

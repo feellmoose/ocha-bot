@@ -40,11 +40,11 @@ func (r LanguageRepo) Lang(lang string) Language {
 func (r LanguageRepo) Context(c telebot.Context) string {
 	user := strconv.FormatInt(c.Sender().ID, 10)
 	if lang, ok := r.repo.Get("us_" + user); ok {
-		return lang.(string)
+		return string(lang.(Language))
 	}
 	chat := strconv.FormatInt(c.Chat().ID, 10)
 	if lang, ok := r.repo.Get("ch_" + chat); ok {
-		return lang.(string)
+		return string(lang.(Language))
 	}
 	return string(r.Lang(c.Sender().LanguageCode))
 }
