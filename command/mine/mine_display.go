@@ -2,6 +2,7 @@ package mine
 
 import (
 	"gopkg.in/telebot.v4"
+	"log"
 	"ocha_server_bot/helper"
 	"strconv"
 )
@@ -20,9 +21,11 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 		err     error
 	)
 
+	log.Printf("%v", info)
+
 	switch t.Status() {
 	case Init, UnInit:
-		buttons = t.emptyButton(boxes)
+		buttons = t.emptyButton()
 		text, err = helper.Messages[info.Locale]["mine.game.Start.note"].Execute(map[string]string{
 			"Username": c.Sender().Username,
 			"Width":    strconv.Itoa(t.Width()),
@@ -171,7 +174,6 @@ func (t TelegramMineGame) runningButton(boxes [][]Box) [][]telebot.InlineButton 
 	} else {
 		action = "click"
 	}
-	unique := action
 
 	buttons := make([][]telebot.InlineButton, len(boxes))
 	for i, row := range boxes {
@@ -179,19 +181,19 @@ func (t TelegramMineGame) runningButton(boxes [][]Box) [][]telebot.InlineButton 
 		for j, box := range row {
 			if box.IsFlagged() {
 				buttons[i][j] = telebot.InlineButton{
-					Unique: unique,
+					Unique: action,
 					Text:   "🚩",
 					Data:   t.ID() + "|" + strconv.Itoa(i) + "|" + strconv.Itoa(j),
 				}
 			} else if box.IsClicked() {
 				buttons[i][j] = telebot.InlineButton{
-					Unique: unique,
+					Unique: action,
 					Text:   strconv.Itoa(box.Num()),
 					Data:   t.ID() + "|" + strconv.Itoa(i) + "|" + strconv.Itoa(j),
 				}
 			} else {
 				buttons[i][j] = telebot.InlineButton{
-					Unique: unique,
+					Unique: action,
 					Text:   " ",
 					Data:   t.ID() + "|" + strconv.Itoa(i) + "|" + strconv.Itoa(j),
 				}
@@ -201,21 +203,20 @@ func (t TelegramMineGame) runningButton(boxes [][]Box) [][]telebot.InlineButton 
 	return buttons
 }
 
-func (t TelegramMineGame) emptyButton(boxes [][]Box) [][]telebot.InlineButton {
+func (t TelegramMineGame) emptyButton() [][]telebot.InlineButton {
 	var action string
 	if t.Infos().Button == BFlag {
 		action = "flag"
 	} else {
 		action = "click"
 	}
-	unique := action
 
-	buttons := make([][]telebot.InlineButton, len(boxes))
+	buttons := make([][]telebot.InlineButton, t.Width())
 	for i := 0; i < t.Width(); i++ {
-		buttons[i] = make([]telebot.InlineButton, len(boxes[i]))
+		buttons[i] = make([]telebot.InlineButton, t.Height())
 		for j := 0; j < t.Height(); j++ {
 			buttons[i][j] = telebot.InlineButton{
-				Unique: unique,
+				Unique: action,
 				Text:   " ",
 				Data:   t.ID() + "|" + strconv.Itoa(i) + "|" + strconv.Itoa(j),
 			}
