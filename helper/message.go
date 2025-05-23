@@ -71,6 +71,28 @@ var templates = map[string]map[string]string{
 		"mine.game.error":                 "@{{ .Username }} 哎呀！出了点问题！{{.Message}}！",
 		"help.note":                       "@{{ .Username }}\n欢迎使用 ocha ！\n以下是一些帮助您入门的命令：\n\n/mine &lt;宽度&gt; &lt;高度&gt; &lt;地雷数&gt;\n/help\n\n<blockquote>\nocha bot\n作者: @feellmoose_dev\n版本信息:{{.Version}}\n更新于:{{.Update}}\n</blockquote>",
 	},
+	"cxg": {
+		"menu.back.button":                "返回喵",
+		"menu.cancel.button":              "取消喵",
+		"mine.game.menu.easy.button":      "杂鱼",
+		"mine.game.menu.normal.button":    "一般",
+		"mine.game.menu.hard.button":      "勉强",
+		"mine.game.menu.nightmare.button": "找虐喵",
+		"mine.game.menu.random.button":    "随本喵心意",
+		"mine.game.start.button":          "扫雷~启动！",
+		"mine.game.win.button":            "再战！",
+		"mine.game.lose.button":           "不服？咱还要玩！",
+		"mine.game.opt.quit":              "逃跑喵",
+		"mine.game.opt.flag":              "插旗旗",
+		"mine.game.opt.click":             "点爆它",
+		"language.note":                   "@{{ .Username }} 哼哼~本nya大人已经优雅地把你的语言换好啦，要是不感谢我...就要被~惩罚~了喵！",
+		"mine.game.menu.note":             "@{{ .Username }}\n欢迎来到本nya大人精心布置的雷之乐园~♡\n喵呼呼~快选个难度试试看你能撑几步喵？别怕爆炸哦，本nya大人会在一旁看好戏的~♪",
+		"mine.game.start.note":            "@{{ .Username }}\n喵喵喵~你的游戏开始啦～\n尺寸：{{ .Width }} × {{ .Height }}，地雷数：{{ .Mines }} 个。\n本nya大人已经布好雷，等你来踩爆~♡",
+		"mine.game.win.note":              "@{{ .Username }}\n你竟然赢了喵！？哼哼~你是不是偷偷作弊了？不然怎么可能在 {{ .Seconds }} 秒就完成地图：{{ .Width }}×{{ .Height }}，地雷数：{{ .Mines }} 个！\n本nya大人才没那么容易认输呢~下次让你哭着投降！",
+		"mine.game.lose.note":             "@{{ .Username }}\n砰～💣哇咔咔~你爆炸啦~本nya大人就知道你会踩雷喵！\n时间：{{ .Seconds }} 秒，地图：{{ .Width }}×{{ .Height }}，雷数：{{ .Mines }}。\n可怜兮兮的小笨蛋，要不要本nya大人抱抱呀~？嘻嘻~",
+		"mine.game.error":                 "@{{ .Username }} 哎呀出错了喵～你果然不行呢~连 {{ .Message }} 都搞不清楚~要不要本nya大人教教你啊？喵呼呼~",
+		"help.note":                       "@{{ .Username }}\n迷路的小猫咪要找帮助吗？本nya大人大发慈悲告诉你一点线索喵~\n\n/mine &lt;宽度&gt; &lt;高度&gt; &lt;地雷数&gt;\n/help\n\n<blockquote>\n我是本nya大人！是你梦里调戏不得的鬼畜主喵～♡\n作者: @feellmoose_dev\n版本：{{.Version}}\n更新时间：{{.Update}}\n</blockquote>",
+	},
 }
 
 func convert(templates map[string]map[string]string) map[string]map[string]Template {
