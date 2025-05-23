@@ -80,6 +80,11 @@ func RedirectTo(c telebot.Context, args ...string) error {
 		if err != nil {
 			return err
 		}
+	case "mine_nightmare":
+		text, reply, err = buttonClassic(user, topic, lang, 8, 8, 17, c)
+		if err != nil {
+			return err
+		}
 	}
 	switch opt {
 	case "create", "":
@@ -137,23 +142,33 @@ func mineClassic(user int64, topic int, lang string, c telebot.Context) (string,
 			strconv.FormatInt(user, 10),
 			strconv.Itoa(topic),
 		),
-		reply.Data(
-			helper.Messages[lang]["mine.game.menu.random.button"].String(),
-			"menu",
-			"mine_random",
-			"jump",
-			strconv.FormatInt(user, 10),
-			strconv.Itoa(topic),
-		),
-		reply.Data(
-			helper.Messages[lang]["menu.cancel.button"].String(),
-			"menu",
-			"cancel",
-			"cancel",
-			strconv.FormatInt(user, 10),
-			strconv.Itoa(topic),
-		),
 	),
+		reply.Row(
+			reply.Data(
+				helper.Messages[lang]["mine.game.menu.nightmare.button"].String(),
+				"menu",
+				"mine_nightmare",
+				"jump",
+				strconv.FormatInt(user, 10),
+				strconv.Itoa(topic),
+			),
+			reply.Data(
+				helper.Messages[lang]["mine.game.menu.random.button"].String(),
+				"menu",
+				"mine_random",
+				"jump",
+				strconv.FormatInt(user, 10),
+				strconv.Itoa(topic),
+			),
+			reply.Data(
+				helper.Messages[lang]["menu.cancel.button"].String(),
+				"menu",
+				"cancel",
+				"cancel",
+				strconv.FormatInt(user, 10),
+				strconv.Itoa(topic),
+			),
+		),
 	)
 	return text, reply, nil
 }
