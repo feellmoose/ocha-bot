@@ -14,6 +14,9 @@ package command
 /change game
 /quit   game
 
+/language [zh|en|cxg]
+/language_chat [zh|en|cxg]
+
 /help
 
 */

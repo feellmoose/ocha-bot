@@ -28,16 +28,20 @@ type MineCommandFunc interface {
 */
 
 type MineCommandExec struct {
-	repo    *helper.MemRepo
-	id      *helper.GenRandomRepoShortID
-	factory mine.Factory
+	repo     helper.Repo
+	langRepo *helper.LanguageRepo
+	id       *helper.GenRandomRepoShortID
+	factory  mine.Factory
+	menu     *MenuCommandExec
 }
 
-func NewMineCommandExec(repo *helper.MemRepo) *MineCommandExec {
+func NewMineCommandExec(repo helper.Repo, langRepo *helper.LanguageRepo, menu *MenuCommandExec) *MineCommandExec {
 	return &MineCommandExec{
-		repo:    repo,
-		factory: mine.Factory{},
-		id:      helper.NewGenRandomRepoShortID(4, 16, 5, repo),
+		repo:     repo,
+		langRepo: langRepo,
+		factory:  mine.Factory{},
+		id:       helper.NewGenRandomRepoShortID(4, 16, 5, repo),
+		menu:     menu,
 	}
 }
 
@@ -73,12 +77,12 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 		args := c.Args()
 		switch len(args) {
 		case 0:
-			return RedirectTo(c, "mine")
+			return m.menu.RedirectTo(c, "mine")
 		case 3:
 			width, _ = strconv.Atoi(args[0])
 			height, _ = strconv.Atoi(args[1])
 			mines, _ = strconv.Atoi(args[2])
-			return RedirectToButtonClassic(width, height, mines, c)
+			return m.menu.RedirectToButtonClassic(width, height, mines, c)
 		}
 	}
 	return m.mine(
@@ -87,7 +91,7 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 		topic,
 		user,
 		chat,
-		c.Sender().LanguageCode,
+		m.langRepo.Context(c),
 		c)
 }
 

@@ -18,6 +18,12 @@ func main() {
 		Poller:  &telebot.LongPoller{Timeout: 10 * time.Second},
 		OnError: OnError,
 	}
+	home, err := os.UserHomeDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+	repoLanguage := helper.NewFileRepo(home, "language")
+	repoMine := helper.NewFileRepo(home, "mine")
 	bot, err := telebot.NewBot(pref)
 	if err != nil {
 		log.Panicf("Error create bot: %v", err)
@@ -25,9 +31,12 @@ func main() {
 
 	bot.Use(middleware.Recover())
 
-	mine := command.NewMineCommandExec(helper.NewMemRepo())
-	help := command.HelpCommandExec{}
-	menu := command.MenuCommandExec{}
+	langRepo := helper.NewLanguageRepo(repoLanguage)
+
+	menu := command.NewMenuCommandExec(langRepo)
+	mine := command.NewMineCommandExec(repoMine, langRepo, menu)
+	help := command.NewHelpCommandExec(langRepo)
+	lang := command.NewLanguageCommandExec(langRepo)
 
 	bot.Handle("/mine", mine.Mine)
 	bot.Handle("\fmine", mine.Mine)
@@ -45,6 +54,9 @@ func main() {
 
 	bot.Handle("/menu", menu.Menu)
 	bot.Handle("\fmenu", menu.Menu)
+
+	bot.Handle("/language", lang.Language)
+	bot.Handle("/language_chat", lang.LanguageChat)
 
 	log.Println("Bot started")
 	bot.Start()

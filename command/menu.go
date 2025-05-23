@@ -3,7 +3,6 @@ package command
 import (
 	"errors"
 	"gopkg.in/telebot.v4"
-	"log"
 	"ocha_server_bot/helper"
 	"strconv"
 )
@@ -17,11 +16,16 @@ type MenuCommandFunc interface {
 /menu menu_id [jump|create] user topic
 */
 
+func NewMenuCommandExec(repo *helper.LanguageRepo) *MenuCommandExec {
+	return &MenuCommandExec{repo: repo}
+}
+
 type MenuCommandExec struct {
+	repo *helper.LanguageRepo
 }
 
 // RedirectTo menu_id [jump|create] [user] [topic]
-func RedirectTo(c telebot.Context, args ...string) error {
+func (m MenuCommandExec) RedirectTo(c telebot.Context, args ...string) error {
 	var (
 		menu, opt, text, lang string
 		user                  int64
@@ -30,8 +34,6 @@ func RedirectTo(c telebot.Context, args ...string) error {
 		reply *telebot.ReplyMarkup
 		err   error
 	)
-
-	log.Printf("menu:args=%v", args)
 
 	switch len(args) {
 	case 1:
@@ -50,7 +52,7 @@ func RedirectTo(c telebot.Context, args ...string) error {
 		return errors.New("menu args len error")
 	}
 
-	lang = c.Sender().LanguageCode
+	lang = m.repo.Context(c)
 
 	switch menu {
 	case "cancel":
@@ -109,7 +111,7 @@ func RedirectTo(c telebot.Context, args ...string) error {
 }
 
 func (m MenuCommandExec) Menu(c telebot.Context) error {
-	return RedirectTo(c, c.Args()...)
+	return m.RedirectTo(c, c.Args()...)
 }
 
 func mineClassic(user int64, topic int, lang string, c telebot.Context) (string, *telebot.ReplyMarkup, error) {
@@ -219,8 +221,8 @@ func buttonClassic(user int64, topic int, lang string, width, height, mines int,
 	return text, reply, nil
 }
 
-func RedirectToButtonClassic(width, height, mines int, c telebot.Context) error {
-	lang := c.Sender().LanguageCode
+func (m MenuCommandExec) RedirectToButtonClassic(width, height, mines int, c telebot.Context) error {
+	lang := m.repo.Context(c)
 	reply := &telebot.ReplyMarkup{}
 	text, _ := helper.Messages[lang]["mine.game.start.note"].Execute(map[string]string{
 		"Username": c.Sender().Username,

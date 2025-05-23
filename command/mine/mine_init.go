@@ -57,21 +57,21 @@ func (f Factory) Create(id string, user int64, info Additional, width, height, m
 
 	return TelegramMineGame{
 		data: Serialized{
-			id:        id,
-			user:      user,
-			infos:     info.ToMap(),
-			steps:     0,
-			mines:     mines,
-			width:     width,
-			height:    height,
-			boxes:     boxNum,
-			histories: make([]History, 0),
-			status:    Init,
-			create:    now,
-			update:    time.Time{},
-			start:     now,
-			end:       time.Time{},
-			win:       false,
+			ID:        id,
+			User:      user,
+			Infos:     info.ToMap(),
+			Steps:     0,
+			Mines:     mines,
+			Width:     width,
+			Height:    height,
+			Boxes:     boxNum,
+			Histories: make([]History, 0),
+			Status:    Init,
+			Create:    now,
+			Update:    time.Time{},
+			Start:     now,
+			End:       time.Time{},
+			Win:       false,
 		},
 		info: info,
 	}, nil
@@ -79,32 +79,32 @@ func (f Factory) Create(id string, user int64, info Additional, width, height, m
 
 func (f Factory) Empty(id string, user int64, info Additional, width, height, mines int) (TelegramMineGame, error) {
 	if width <= 0 || height <= 0 {
-		return TelegramMineGame{}, errors.New("width <= 0 || height <= 0")
+		return TelegramMineGame{}, errors.New("Width <= 0 || Height <= 0")
 	}
 	if mines < 0 {
-		return TelegramMineGame{}, errors.New("mines < 0")
+		return TelegramMineGame{}, errors.New("Mines < 0")
 	}
 	if width*height <= mines {
-		return TelegramMineGame{}, errors.New("width * height <= mines")
+		return TelegramMineGame{}, errors.New("Width * Height <= Mines")
 	}
 
 	return TelegramMineGame{
 		data: Serialized{
-			id:        id,
-			user:      user,
-			infos:     info.ToMap(),
-			steps:     0,
-			mines:     mines,
-			width:     width,
-			height:    height,
-			boxes:     nil,
-			histories: nil,
-			status:    UnInit,
-			create:    time.Now(),
-			update:    time.Time{},
-			start:     time.Time{},
-			end:       time.Time{},
-			win:       false,
+			ID:        id,
+			User:      user,
+			Infos:     info.ToMap(),
+			Steps:     0,
+			Mines:     mines,
+			Width:     width,
+			Height:    height,
+			Boxes:     nil,
+			Histories: nil,
+			Status:    UnInit,
+			Create:    time.Now(),
+			Update:    time.Time{},
+			Start:     time.Time{},
+			End:       time.Time{},
+			Win:       false,
 		},
 		info: info,
 	}, nil
@@ -112,11 +112,11 @@ func (f Factory) Empty(id string, user int64, info Additional, width, height, mi
 
 func (f Factory) Init(empty TelegramMineGame, x, y int) (TelegramMineGame, error) {
 	game := empty.data
-	if game.status != UnInit {
+	if game.Status != UnInit {
 		return empty, nil
 	}
 
-	width, height, mines := game.width, game.height, game.mines
+	width, height, mines := game.Width, game.Height, game.Mines
 
 	boxes := make([][]Box, width)
 	for i := range boxes {
@@ -146,7 +146,7 @@ func (f Factory) Init(empty TelegramMineGame, x, y int) (TelegramMineGame, error
 	}
 
 	if len(filtered) < mines {
-		return f.Create(game.id, game.user, empty.Infos(), game.width, game.height, game.mines)
+		return f.Create(game.ID, game.User, empty.Infos(), game.Width, game.Height, game.Mines)
 	}
 
 	for i := 0; i < mines; i++ {
@@ -188,21 +188,21 @@ func (f Factory) Init(empty TelegramMineGame, x, y int) (TelegramMineGame, error
 
 	return TelegramMineGame{
 		data: Serialized{
-			id:        game.id,
-			user:      game.user,
-			infos:     empty.info.ToMap(),
-			steps:     0,
-			mines:     mines,
-			width:     width,
-			height:    height,
-			boxes:     boxNum,
-			histories: make([]History, 0),
-			status:    Init,
-			create:    now,
-			update:    time.Time{},
-			start:     now,
-			end:       time.Time{},
-			win:       false,
+			ID:        game.ID,
+			User:      game.User,
+			Infos:     empty.info.ToMap(),
+			Steps:     0,
+			Mines:     mines,
+			Width:     width,
+			Height:    height,
+			Boxes:     boxNum,
+			Histories: make([]History, 0),
+			Status:    Init,
+			Create:    now,
+			Update:    time.Time{},
+			Start:     now,
+			End:       time.Time{},
+			Win:       false,
 		},
 		info: empty.info,
 	}, nil

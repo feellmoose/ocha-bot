@@ -23,7 +23,7 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 	switch t.Status() {
 	case Init, UnInit:
 		buttons = t.emptyButton(boxes)
-		text, err = helper.Messages[info.Locale]["mine.game.start.note"].Execute(map[string]string{
+		text, err = helper.Messages[info.Locale]["mine.game.Start.note"].Execute(map[string]string{
 			"Username": c.Sender().Username,
 			"Width":    strconv.Itoa(t.Width()),
 			"Height":   strconv.Itoa(t.Height()),
@@ -79,9 +79,9 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 			ChatID:    info.Chat,
 		}, &telebot.ReplyMarkup{InlineKeyboard: buttons})
 	case End:
-		buttons = t.endedButton(boxes)
+		buttons = t.endedButton(boxes, t.Win())
 		if t.Win() {
-			text, err = helper.Messages[info.Locale]["mine.game.win.note"].Execute(map[string]string{
+			text, err = helper.Messages[info.Locale]["mine.game.Win.note"].Execute(map[string]string{
 				"Username": c.Sender().Username,
 				"Width":    strconv.Itoa(t.Width()),
 				"Height":   strconv.Itoa(t.Height()),
@@ -117,7 +117,7 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 	return err
 }
 
-func (t TelegramMineGame) endedButton(boxes [][]Box) [][]telebot.InlineButton {
+func (t TelegramMineGame) endedButton(boxes [][]Box, win bool) [][]telebot.InlineButton {
 	buttons := make([][]telebot.InlineButton, len(boxes))
 	for i, row := range boxes {
 		buttons[i] = make([]telebot.InlineButton, len(boxes[i]))
@@ -128,7 +128,7 @@ func (t TelegramMineGame) endedButton(boxes [][]Box) [][]telebot.InlineButton {
 					Text:   "💥",
 					Data:   t.ID() + strconv.Itoa(i) + strconv.Itoa(j),
 				}
-			} else if box.IsMine() && box.IsFlagged() {
+			} else if box.IsMine() && (box.IsFlagged() || win) {
 				buttons[i][j] = telebot.InlineButton{
 					Unique: "empty",
 					Text:   "✅",

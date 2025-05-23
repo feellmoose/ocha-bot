@@ -21,22 +21,22 @@ func (t TelegramMineGame) OnClicked(pos Position) Mine {
 	if !pos.InBounds(t.Width(), t.Height()) {
 		return t
 	}
-	if game.status == UnInit {
+	if game.Status == UnInit {
 		return t
 	}
 
-	box := Box{game.boxes[pos.X][pos.Y]}
+	box := Box{game.Boxes[pos.X][pos.Y]}
 
-	if game.win || box.IsClicked() || box.IsFlagged() || game.status == End {
+	if game.Win || box.IsClicked() || box.IsFlagged() || game.Status == End {
 		return t
 	}
 
 	clicked := 1
-	newBoxes := CloneBoxes(game.boxes)
+	newBoxes := CloneBoxes(game.Boxes)
 	newBoxes[pos.X][pos.Y] = box.Clicked().Value
 
 	now := time.Now()
-	newHistory := append(game.histories, History{
+	newHistory := append(game.Histories, History{
 		Pos:     pos,
 		Option:  Click,
 		Updated: now,
@@ -46,55 +46,55 @@ func (t TelegramMineGame) OnClicked(pos Position) Mine {
 		newHistory[len(newHistory)-1].Option = Boom
 		return TelegramMineGame{
 			data: Serialized{
-				steps:     game.steps + clicked,
-				histories: newHistory,
-				boxes:     newBoxes,
-				status:    End,
-				update:    now,
-				end:       now,
-				win:       false,
-				infos:     t.info.ToMap(),
-				id:        game.id,
-				user:      game.user,
-				mines:     game.mines,
-				width:     game.width,
-				height:    game.height,
-				start:     game.start,
-				create:    game.create,
+				Steps:     game.Steps + clicked,
+				Histories: newHistory,
+				Boxes:     newBoxes,
+				Status:    End,
+				Update:    now,
+				End:       now,
+				Win:       false,
+				Infos:     t.info.ToMap(),
+				ID:        game.ID,
+				User:      game.User,
+				Mines:     game.Mines,
+				Width:     game.Width,
+				Height:    game.Height,
+				Start:     game.Start,
+				Create:    game.Create,
 			},
 			info: t.info,
 		}
 	}
 
 	if box.Num() == 0 {
-		related := clickedZero(game.width, game.height, pos, newBoxes)
+		related := clickedZero(game.Width, game.Height, pos, newBoxes)
 		clicked += len(related)
 		newHistory[len(newHistory)-1].Related = related
 
 		for _, h := range related {
 			p := h.Pos
-			newBoxes[p.X][p.Y] = Box{game.boxes[p.X][p.Y]}.Clicked().Value
+			newBoxes[p.X][p.Y] = Box{game.Boxes[p.X][p.Y]}.Clicked().Value
 		}
 	}
 
-	if game.steps+clicked+game.mines == game.width*game.height {
+	if game.Steps+clicked+game.Mines == game.Width*game.Height {
 		return TelegramMineGame{
 			data: Serialized{
-				steps:     game.steps + clicked,
-				histories: newHistory,
-				boxes:     newBoxes,
-				status:    End,
-				update:    now,
-				end:       now,
-				win:       true,
-				infos:     t.info.ToMap(),
-				id:        game.id,
-				user:      game.user,
-				mines:     game.mines,
-				width:     game.width,
-				height:    game.height,
-				start:     game.start,
-				create:    game.create,
+				Steps:     game.Steps + clicked,
+				Histories: newHistory,
+				Boxes:     newBoxes,
+				Status:    End,
+				Update:    now,
+				End:       now,
+				Win:       true,
+				Infos:     t.info.ToMap(),
+				ID:        game.ID,
+				User:      game.User,
+				Mines:     game.Mines,
+				Width:     game.Width,
+				Height:    game.Height,
+				Start:     game.Start,
+				Create:    game.Create,
 			},
 			info: t.info,
 		}
@@ -102,21 +102,21 @@ func (t TelegramMineGame) OnClicked(pos Position) Mine {
 
 	return TelegramMineGame{
 		data: Serialized{
-			steps:     game.steps + clicked,
-			histories: newHistory,
-			boxes:     newBoxes,
-			status:    Running,
-			update:    now,
-			end:       time.Time{},
-			win:       false,
-			infos:     t.info.ToMap(),
-			id:        game.id,
-			user:      game.user,
-			mines:     game.mines,
-			width:     game.width,
-			height:    game.height,
-			start:     game.start,
-			create:    game.create,
+			Steps:     game.Steps + clicked,
+			Histories: newHistory,
+			Boxes:     newBoxes,
+			Status:    Running,
+			Update:    now,
+			End:       time.Time{},
+			Win:       false,
+			Infos:     t.info.ToMap(),
+			ID:        game.ID,
+			User:      game.User,
+			Mines:     game.Mines,
+			Width:     game.Width,
+			Height:    game.Height,
+			Start:     game.Start,
+			Create:    game.Create,
 		},
 		info: t.info,
 	}
@@ -193,11 +193,11 @@ func clickedZero(width, height int, from Position, boxes [][]int) []History {
 func (t TelegramMineGame) OnFlagged(pos Position) Mine {
 
 	game := t.data
-	if !pos.InBounds(game.width, game.height) || game.win || game.status != Running {
+	if !pos.InBounds(game.Width, game.Height) || game.Win || game.Status != Running {
 		return t
 	}
 
-	box := Box{game.boxes[pos.X][pos.Y]}
+	box := Box{game.Boxes[pos.X][pos.Y]}
 
 	if box.IsClicked() {
 		return t
@@ -205,31 +205,31 @@ func (t TelegramMineGame) OnFlagged(pos Position) Mine {
 
 	now := time.Now()
 
-	newHistory := append(game.histories, History{
+	newHistory := append(game.Histories, History{
 		Pos:     pos,
 		Option:  Flag,
 		Updated: now,
 	})
 
-	newBoxes := CloneBoxes(game.boxes)
+	newBoxes := CloneBoxes(game.Boxes)
 	newBoxes[pos.X][pos.Y] = box.Flagged().Value
 	return TelegramMineGame{
 		data: Serialized{
-			steps:     game.steps,
-			histories: newHistory,
-			boxes:     newBoxes,
-			status:    Running,
-			update:    now,
-			end:       time.Time{},
-			win:       false,
-			infos:     t.info.ToMap(),
-			id:        game.id,
-			user:      game.user,
-			mines:     game.mines,
-			width:     game.width,
-			height:    game.height,
-			start:     game.start,
-			create:    game.create,
+			Steps:     game.Steps,
+			Histories: newHistory,
+			Boxes:     newBoxes,
+			Status:    Running,
+			Update:    now,
+			End:       time.Time{},
+			Win:       false,
+			Infos:     t.info.ToMap(),
+			ID:        game.ID,
+			User:      game.User,
+			Mines:     game.Mines,
+			Width:     game.Width,
+			Height:    game.Height,
+			Start:     game.Start,
+			Create:    game.Create,
 		},
 		info: t.info,
 	}
@@ -237,24 +237,24 @@ func (t TelegramMineGame) OnFlagged(pos Position) Mine {
 
 func (t TelegramMineGame) OnRollback(s int) Mine {
 	game := t.data
-	if game.status == UnInit {
+	if game.Status == UnInit {
 		return t
 	}
 
 	now := time.Now()
 
 	var newHistory []History
-	if len(game.histories) > s {
-		newHistory = game.histories[:len(game.histories)-s]
+	if len(game.Histories) > s {
+		newHistory = game.Histories[:len(game.Histories)-s]
 	} else {
 		newHistory = []History{}
 	}
 
-	newBoxes := CloneBoxes(game.boxes)
+	newBoxes := CloneBoxes(game.Boxes)
 	step := 0
 
-	for i := len(game.histories) - 1; i >= len(game.histories)-s && i >= 0; i-- {
-		h := game.histories[i]
+	for i := len(game.Histories) - 1; i >= len(game.Histories)-s && i >= 0; i-- {
+		h := game.Histories[i]
 		pos := h.Pos
 		switch h.Option {
 		case Flag:
@@ -281,21 +281,21 @@ func (t TelegramMineGame) OnRollback(s int) Mine {
 	}
 	return TelegramMineGame{
 		data: Serialized{
-			steps:     game.steps - step,
-			histories: newHistory,
-			boxes:     newBoxes,
-			status:    Running,
-			update:    now,
-			end:       time.Time{},
-			win:       false,
-			infos:     t.info.ToMap(),
-			id:        game.id,
-			user:      game.user,
-			mines:     game.mines,
-			width:     game.width,
-			height:    game.height,
-			start:     game.start,
-			create:    game.create,
+			Steps:     game.Steps - step,
+			Histories: newHistory,
+			Boxes:     newBoxes,
+			Status:    Running,
+			Update:    now,
+			End:       time.Time{},
+			Win:       false,
+			Infos:     t.info.ToMap(),
+			ID:        game.ID,
+			User:      game.User,
+			Mines:     game.Mines,
+			Width:     game.Width,
+			Height:    game.Height,
+			Start:     game.Start,
+			Create:    game.Create,
 		},
 		info: t.info,
 	}
@@ -304,30 +304,30 @@ func (t TelegramMineGame) OnRollback(s int) Mine {
 func (t TelegramMineGame) Serialize() Serialized {
 	game := &t.data
 	return Serialized{
-		id:        game.id,
-		user:      game.user,
-		infos:     t.info.ToMap(),
-		steps:     game.steps,
-		mines:     game.mines,
-		width:     game.width,
-		height:    game.height,
-		boxes:     game.boxes,
-		histories: game.histories,
-		status:    game.status,
-		create:    game.create,
-		update:    game.update,
-		start:     game.start,
-		end:       game.end,
-		win:       game.win,
+		ID:        game.ID,
+		User:      game.User,
+		Infos:     t.info.ToMap(),
+		Steps:     game.Steps,
+		Mines:     game.Mines,
+		Width:     game.Width,
+		Height:    game.Height,
+		Boxes:     game.Boxes,
+		Histories: game.Histories,
+		Status:    game.Status,
+		Create:    game.Create,
+		Update:    game.Update,
+		Start:     game.Start,
+		End:       game.End,
+		Win:       game.Win,
 	}
 }
 
 func (t TelegramMineGame) ID() string {
-	return t.data.id
+	return t.data.ID
 }
 
 func (t TelegramMineGame) UserID() int64 {
-	return t.data.user
+	return t.data.User
 }
 
 func (t TelegramMineGame) Infos() Additional {
@@ -335,19 +335,19 @@ func (t TelegramMineGame) Infos() Additional {
 }
 
 func (t TelegramMineGame) Steps() int {
-	return t.data.steps
+	return t.data.Steps
 }
 
 func (t TelegramMineGame) Mines() int {
-	return t.data.mines
+	return t.data.Mines
 }
 
 func (t TelegramMineGame) Width() int {
-	return t.data.width
+	return t.data.Width
 }
 
 func (t TelegramMineGame) Height() int {
-	return t.data.height
+	return t.data.Height
 }
 
 func (t TelegramMineGame) Boxes() [][]Box {
@@ -356,7 +356,7 @@ func (t TelegramMineGame) Boxes() [][]Box {
 		res[i] = make([]Box, t.Height())
 	}
 
-	for i, row := range t.data.boxes {
+	for i, row := range t.data.Boxes {
 		for j, val := range row {
 			res[i][j] = Box{val}
 		}
@@ -366,30 +366,30 @@ func (t TelegramMineGame) Boxes() [][]Box {
 }
 
 func (t TelegramMineGame) History() []History {
-	return t.data.histories
+	return t.data.Histories
 }
 
 func (t TelegramMineGame) Status() GameStatus {
-	return t.data.status
+	return t.data.Status
 }
 
 func (t TelegramMineGame) Duration() time.Duration {
 	game := t.data
-	switch game.status {
+	switch game.Status {
 	case UnInit, Init:
 		return 0
 	case Running:
-		start := game.start
+		start := game.Start
 		if start.IsZero() {
 			start = time.Now()
 		}
 		return time.Since(start)
 	case End:
-		start := game.start
+		start := game.Start
 		if start.IsZero() {
 			start = time.Now()
 		}
-		end := game.end
+		end := game.End
 		if end.IsZero() {
 			end = time.Now()
 		}
@@ -400,5 +400,5 @@ func (t TelegramMineGame) Duration() time.Duration {
 }
 
 func (t TelegramMineGame) Win() bool {
-	return t.data.win
+	return t.data.Win
 }

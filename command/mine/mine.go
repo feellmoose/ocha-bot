@@ -30,32 +30,32 @@ type Mine interface {
 }
 
 type Serialized struct {
-	id        string
-	user      int64
-	infos     map[string]string
-	steps     int
-	mines     int
-	width     int
-	height    int
-	boxes     [][]int
-	histories []History
-	status    GameStatus
-	create    time.Time
-	update    time.Time
-	start     time.Time
-	end       time.Time
-	win       bool
+	ID        string            `json:"id,omitempty"`
+	User      int64             `json:"user,omitempty"`
+	Infos     map[string]string `json:"infos,omitempty"`
+	Steps     int               `json:"steps,omitempty"`
+	Mines     int               `json:"mines,omitempty"`
+	Width     int               `json:"width,omitempty"`
+	Height    int               `json:"height,omitempty"`
+	Boxes     [][]int           `json:"boxes,omitempty"`
+	Histories []History         `json:"histories,omitempty"`
+	Status    GameStatus        `json:"status,omitempty"`
+	Create    time.Time         `json:"create,omitempty"`
+	Update    time.Time         `json:"update,omitempty"`
+	Start     time.Time         `json:"start,omitempty"`
+	End       time.Time         `json:"end,omitempty"`
+	Win       bool              `json:"win,omitempty"`
 }
 
 func (s Serialized) Deserialize() Mine {
-	infos, _ := FromMap(s.infos)
+	infos, _ := FromMap(s.Infos)
 	return TelegramMineGame{
 		data: s,
 		info: infos,
 	}
 }
 
-// Position for each steps
+// Position for each Steps
 type Position struct {
 	X int
 	Y int
@@ -73,7 +73,7 @@ type History struct {
 	Related []History
 }
 
-// GameStatus for steps and win check
+// GameStatus for Steps and Win check
 type GameStatus int
 
 const (
@@ -92,7 +92,7 @@ const (
 	Boom
 )
 
-// Box is a no status mine unit
+// Box is a no Status mine unit
 type Box struct {
 	Value int
 }

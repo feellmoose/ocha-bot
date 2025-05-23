@@ -1,6 +1,12 @@
 package helper
 
 import (
+	"encoding/json"
+	"errors"
+	"io"
+	"log"
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
 )
@@ -93,6 +99,156 @@ func (r *MemRepo) Put(key string, value interface{}) bool {
 }
 
 func (r *MemRepo) Del(key string) bool {
+	_, exists := r.data.Load(key)
+	if exists {
+		r.data.Delete(key)
+		return true
+	}
+	return false
+}
+
+type FileRepo struct {
+	dir     string
+	name    string
+	data    *sync.Map
+	sticker *time.Ticker
+	stop    chan struct{}
+}
+
+func NewFileRepo(dir string, name string) *FileRepo {
+	var (
+		filename = filepath.Join(dir, name+"_data.json")
+		file     *os.File
+		err      error
+		data     sync.Map
+	)
+
+	if _, err = os.Stat(filename); errors.Is(err, os.ErrNotExist) {
+		file, err = os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
+		if err != nil {
+			log.Panicf("Error create file repo: file error=%v", err)
+		}
+
+		encoder := json.NewEncoder(file)
+		if err = encoder.Encode(make(map[string]interface{})); err != nil {
+			log.Panicf("Error create file repo: encode {} in create file error=%v", err)
+		}
+
+		if err = file.Sync(); err != nil {
+			log.Panicf("Error create file repo: sync file error=%v", err)
+		}
+
+		log.Printf("Create File(filename=%s) with {} success", filename)
+	} else {
+		file, err = os.OpenFile(filename, os.O_RDWR, 0666)
+		if err != nil {
+			log.Panicf("Error create file repo: file error=%v", err)
+		}
+
+		var temp map[string]interface{}
+		decoder := json.NewDecoder(file)
+		if err = decoder.Decode(&temp); err != nil {
+			log.Panicf("Error create file repo: decode failed error=%v", err)
+		}
+
+		for key, value := range temp {
+			data.Store(key, value)
+		}
+		log.Printf("Load File(filename=%s) data success", filename)
+	}
+
+	repo := &FileRepo{
+		dir:     dir,
+		data:    &data,
+		stop:    make(chan struct{}),
+		sticker: time.NewTicker(1 * time.Second),
+	}
+
+	go repo.loop()
+
+	return repo
+}
+
+func (r *FileRepo) loop() {
+	for {
+		select {
+		case <-r.sticker.C:
+			err := r.Sync()
+			if err != nil {
+				log.Printf("Sync repo into file failed %v", err)
+			}
+		case <-r.stop:
+			return
+		}
+	}
+}
+
+func (r *FileRepo) Sync() error {
+	temp, err := os.CreateTemp(r.dir, "repo_*.json")
+	if err != nil {
+		return err
+	}
+	defer temp.Close()
+	defer os.Remove(temp.Name())
+	encoder := json.NewEncoder(temp)
+
+	tempMap := make(map[string]interface{})
+	r.data.Range(func(key, value interface{}) bool {
+		strKey, ok := key.(string)
+		if !ok {
+			return true
+		}
+		tempMap[strKey] = value
+		return true
+	})
+
+	if err = encoder.Encode(tempMap); err != nil {
+		return err
+	}
+	if err = temp.Sync(); err != nil {
+		return err
+	}
+
+	dst, err := os.Create(filepath.Join(r.dir, r.name+"_data.json"))
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+
+	_, err = temp.Seek(0, io.SeekStart)
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(dst, temp)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *FileRepo) Stop() {
+	close(r.stop)
+	err := r.Sync()
+	if err != nil {
+		log.Printf("Sync repo into file failed %v", err)
+	}
+	if err != nil {
+		log.Printf("Sync repo into file failed %v", err)
+	}
+}
+
+func (r *FileRepo) Get(key string) (interface{}, bool) {
+	return r.data.Load(key)
+}
+
+func (r *FileRepo) Put(key string, value interface{}) bool {
+	r.data.Store(key, value)
+	return true
+}
+
+func (r *FileRepo) Del(key string) bool {
 	_, exists := r.data.Load(key)
 	if exists {
 		r.data.Delete(key)
