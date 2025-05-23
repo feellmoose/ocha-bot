@@ -192,7 +192,7 @@ func buttonClassic(user int64, topic int, lang string, width, height, mines int,
 			strconv.Itoa(topic),
 		),
 		reply.Data(
-			helper.Messages[lang]["menu.quit.button"].String(),
+			helper.Messages[lang]["menu.back.button"].String(),
 			"menu",
 			"mine",
 			"jump",
