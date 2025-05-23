@@ -2,7 +2,6 @@ package mine
 
 import (
 	"gopkg.in/telebot.v4"
-	"log"
 	"ocha_server_bot/helper"
 	"strconv"
 )
@@ -21,12 +20,10 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 		err     error
 	)
 
-	log.Printf("%v", info)
-
 	switch t.Status() {
 	case Init, UnInit:
 		buttons = t.emptyButton()
-		text, err = helper.Messages[info.Locale]["mine.game.Start.note"].Execute(map[string]string{
+		text, err = helper.Messages[info.Locale]["mine.game.start.note"].Execute(map[string]string{
 			"Username": c.Sender().Username,
 			"Width":    strconv.Itoa(t.Width()),
 			"Height":   strconv.Itoa(t.Height()),
@@ -84,7 +81,7 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 	case End:
 		buttons = t.endedButton(boxes, t.Win())
 		if t.Win() {
-			text, err = helper.Messages[info.Locale]["mine.game.Win.note"].Execute(map[string]string{
+			text, err = helper.Messages[info.Locale]["mine.game.win.note"].Execute(map[string]string{
 				"Username": c.Sender().Username,
 				"Width":    strconv.Itoa(t.Width()),
 				"Height":   strconv.Itoa(t.Height()),
