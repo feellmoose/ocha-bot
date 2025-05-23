@@ -46,7 +46,7 @@ var templates = map[string]map[string]string{
 		"mine.game.opt.flag":              "Flag",
 		"mine.game.opt.click":             "Sweep",
 		"mine.game.error":                 "@{{ .Username }} Oops! Something went wrong! {{.Message}}!",
-		"mine.help":                       "@{{ .Username }}\nWelcome to ocha!\nHere are some commands to help you get started:\n\n/mine <width> <height> <number of mines>\n/help\n\n<blockquote>\nocha bot\nAuthor: @feellmoose_dev\nVersion: {{.Version}}\nUpdated on: {{.Update}}\n</blockquote>",
+		"mine.help":                       "@{{ .Username }}\nWelcome to ocha!\nHere are some commands to help you get started:\n\n/mine &lt;width&gt; &lt;height&gt; &lt;number of mines&gt;\n/help\n\n<blockquote>\nocha bot\nAuthor: @feellmoose_dev\nVersion: {{.Version}}\nUpdated on: {{.Update}}\n</blockquote>",
 	},
 	"zh": {
 		"menu.back.button":                "返回",
@@ -66,7 +66,8 @@ var templates = map[string]map[string]string{
 		"mine.game.opt.quit":              "退出",
 		"mine.game.opt.flag":              "插旗",
 		"mine.game.opt.click":             "扫雷",
-		"mine.game.error":                 "@{{ .Username }} 哎呀！出了点问题！{{.Message}}！`,\n\t\t\"mine.help\": `@{{ .Username }}\n欢迎使用 ocha ！\n以下是一些帮助您入门的命令：\n\n/mine [&lt;宽度&gt; &lt;高度&gt; &lt;地雷数&gt;]\n/help\n\n<blockquote>\nocha bot\n作者: @feellmoose_dev\n版本信息:{{.Version}}\n更新于:{{.Update}}\n</blockquote>",
+		"mine.game.error":                 "@{{ .Username }} 哎呀！出了点问题！{{.Message}}！",
+		"mine.help":                       "@{{ .Username }}\n欢迎使用 ocha ！\n以下是一些帮助您入门的命令：\n\n/mine &lt;宽度&gt; &lt;高度&gt; &lt;地雷数&gt;/help\n\n<blockquote>\nocha bot\n作者: @feellmoose_dev\n版本信息:{{.Version}}\n更新于:{{.Update}}\n</blockquote>",
 	},
 }
 
