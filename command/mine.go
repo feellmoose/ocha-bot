@@ -238,10 +238,16 @@ func (m *MineCommandExec) quit(id string, user int64, c telebot.Context) error {
 		if !m.repo.Del(id) {
 			return errors.New("put repo failed")
 		}
-		_, err := c.Bot().Edit(telebot.StoredMessage{
+		text, err := helper.Messages[m.langRepo.Context(c)]["mine.game.quit.note"].Execute(map[string]string{
+			"Username": c.Sender().Username,
+		})
+		if err != nil {
+			return err
+		}
+		_, err = c.Bot().Edit(telebot.StoredMessage{
 			MessageID: strconv.Itoa(game.Infos().Message),
 			ChatID:    game.Infos().Chat},
-			"@"+c.Sender().Username+" Quit Success!",
+			text,
 			&telebot.ReplyMarkup{InlineKeyboard: make([][]telebot.InlineButton, 0)},
 		)
 		return err
