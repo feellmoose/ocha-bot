@@ -21,8 +21,11 @@ type LanguageCommandExec struct {
 	menu *MenuCommandExec
 }
 
-func NewLanguageCommandExec(repo *helper.LanguageRepo) *LanguageCommandExec {
-	return &LanguageCommandExec{repo: repo}
+func NewLanguageCommandExec(repo *helper.LanguageRepo, menu *MenuCommandExec) *LanguageCommandExec {
+	return &LanguageCommandExec{
+		repo: repo,
+		menu: menu,
+	}
 }
 
 func (l LanguageCommandExec) Language(c telebot.Context) error {
