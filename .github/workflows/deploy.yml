@@ -1,9 +1,9 @@
-name: Deploy Go Application
+name: Remote Deploy
 
 on:
   push:
     branches:
-      - release
+      - main
 
 jobs:
   deploy:
@@ -22,44 +22,33 @@ jobs:
           go mod tidy
           GOOS=linux GOARCH=amd64 go build -o ./target/ocha_bot
 
-      - name: Set up SSH agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Stop bot services on remote server
+      - name: Stop bot service
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
-            sudo systemctl stop ocha-bot.service || echo 'ocha-bot service not running'
-            sudo systemctl stop mine-sweeper-bot.service || echo 'mine-sweeper-bot service not running'
+            sudo systemctl stop ocha-bot.service || true
+            sudo systemctl stop mine-sweeper-bot.service || true
           "
 
-      - name: Remove old binary on remote server
+      - name: Remove old binary on server
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
-            rm -f ~/ocha_bot
+            rm -f /home/${{ secrets.SSH_USER }}/ocha_bot
           "
 
-      - name: Upload new binary to remote server
-        uses: burnett01/rsync-deployments@7.0.2
-        with:
-          switches: -avzr --delete
-          path: ./target/ocha_bot
-          remote_path: ~/ocha_bot
-          remote_host: ${{ secrets.SSH_HOST }}
-          remote_user: ${{ secrets.SSH_USER }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Upload new binary to server
+        run: |
+          scp ./target/ocha_bot ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/${{ secrets.SSH_USER }}/ocha_bot
 
-      - name: Start bot services on remote server
+      - name: Start bot service
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             sudo systemctl start ocha-bot.service
             sudo systemctl start mine-sweeper-bot.service
-          "
-
-      - name: Verify services are running
-        run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
-            systemctl is-active --quiet ocha-bot.service && echo 'ocha-bot is running' || echo 'ocha-bot failed to start'
-            systemctl is-active --quiet mine-sweeper-bot.service && echo 'mine-sweeper-bot is running' || echo 'mine-sweeper-bot failed to start'
           "
