@@ -1,4 +1,4 @@
-name: Remote Deploy
+name: Deploy Go Application
 
 on:
   push:
@@ -22,46 +22,44 @@ jobs:
           go mod tidy
           GOOS=linux GOARCH=amd64 go build -o ./target/ocha_bot
 
-      - name: Set up SSH key
-        uses: webfactory/ssh-agent@v0.7.0
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Stop bot services on remote server
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          script: |
-            sudo systemctl stop ocha-bot.service || true
-            sudo systemctl stop mine-sweeper-bot.service || true
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            sudo systemctl stop ocha-bot.service || echo 'ocha-bot service not running'
+            sudo systemctl stop mine-sweeper-bot.service || echo 'mine-sweeper-bot service not running'
+          "
 
       - name: Remove old binary on remote server
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          script: |
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             rm -f ~/ocha_bot
+          "
 
       - name: Upload new binary to remote server
-        run: |
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./target/ocha_bot ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/ocha_bot
+        uses: burnett01/rsync-deployments@7.0.2
+        with:
+          switches: -avzr --delete
+          path: ./target/ocha_bot
+          remote_path: ~/ocha_bot
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Start bot services on remote server
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          script: |
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             sudo systemctl start ocha-bot.service
             sudo systemctl start mine-sweeper-bot.service
+          "
 
       - name: Verify services are running
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          script: |
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             systemctl is-active --quiet ocha-bot.service && echo 'ocha-bot is running' || echo 'ocha-bot failed to start'
             systemctl is-active --quiet mine-sweeper-bot.service && echo 'mine-sweeper-bot is running' || echo 'mine-sweeper-bot failed to start'
+          "
