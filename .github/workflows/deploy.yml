@@ -3,7 +3,7 @@ name: Deploy Go Application
 on:
   push:
     branches:
-      - main
+      - release
 
 jobs:
   deploy:
