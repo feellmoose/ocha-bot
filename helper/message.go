@@ -47,7 +47,7 @@ var templates = map[string]map[string]string{
 		"mine.game.opt.flag":              "Flag",
 		"mine.game.opt.click":             "Sweep",
 		"mine.game.error":                 "@{{ .Username }} Oops! Something went wrong! {{.Message}}!",
-		"help.note":                       "@{{ .Username }}\nWelcome to ocha!\nHere are some commands to help you get started:\n\n/mine &lt;width&gt; &lt;height&gt; &lt;number of mines&gt;\n/help\n\n<blockquote>\n{{.BotName}}\nAuthor: @feellmoose_dev\nVersion: {{.Version}}\nUpdated on: {{.Update}}\n</blockquote>",
+		"help.note":                       "@{{ .Username }}\nWelcome to ocha!\nHere are some commands to help you get started:\n\n/mine\n/mine &lt;width&gt; &lt;height&gt; &lt;mines&gt;\n/lang [zh|en|cxg]\n/lang_chat [zh|en|cxg]\n/help\n\n<blockquote>\n{{.BotName}}\nAuthor: @feellmoose_dev\nVersion: {{.Version}}\nUpdated on: {{.Update}}\n</blockquote>",
 	},
 	"zh": {
 		"language.note":                   "@{{ .Username }} 修改语言成功",
@@ -69,7 +69,7 @@ var templates = map[string]map[string]string{
 		"mine.game.opt.flag":              "插旗",
 		"mine.game.opt.click":             "扫雷",
 		"mine.game.error":                 "@{{ .Username }} 哎呀！出了点问题！{{.Message}}！",
-		"help.note":                       "@{{ .Username }}\n欢迎使用 ocha ！\n以下是一些帮助您入门的命令：\n\n/mine &lt;宽度&gt; &lt;高度&gt; &lt;地雷数&gt;\n/help\n\n<blockquote>\n{{.BotName}}\n作者: @feellmoose_dev\n版本信息:{{.Version}}\n更新于:{{.Update}}\n</blockquote>",
+		"help.note":                       "@{{ .Username }}\n欢迎使用 ocha ！\n以下是一些帮助您入门的命令：\n\n/mine\n/mine &lt;宽&gt; &lt;高&gt; &lt;雷数&gt;\n/lang [zh|en|cxg]\n/lang_chat [zh|en|cxg]\n/help\n\n<blockquote>\n{{.BotName}}\n作者: @feellmoose_dev\n版本信息:{{.Version}}\n更新于:{{.Update}}\n</blockquote>",
 	},
 	"cxg": {
 		"menu.back.button":                "返回喵",
@@ -91,7 +91,7 @@ var templates = map[string]map[string]string{
 		"mine.game.win.note":              "@{{ .Username }}\n你竟然赢了喵！？哼哼~你是不是偷偷作弊了？不然怎么可能在 {{ .Seconds }} 秒就完成地图：{{ .Width }}×{{ .Height }}，地雷数：{{ .Mines }} 个！\n本nya大人才没那么容易认输呢~下次让你哭着投降！",
 		"mine.game.lose.note":             "@{{ .Username }}\n砰～💣哇咔咔~你爆炸啦~本nya大人就知道你会踩雷喵！\n时间：{{ .Seconds }} 秒，地图：{{ .Width }}×{{ .Height }}，雷数：{{ .Mines }}。\n可怜兮兮的小笨蛋，要不要本nya大人抱抱呀~？嘻嘻~",
 		"mine.game.error":                 "@{{ .Username }} 哎呀出错了喵～你果然不行呢~连 {{ .Message }} 都搞不清楚~要不要本nya大人教教你啊？喵呼呼~",
-		"help.note":                       "@{{ .Username }}\n迷路的小猫咪要找帮助吗？本nya大人大发慈悲告诉你一点线索喵~\n\n/mine &lt;宽度&gt; &lt;高度&gt; &lt;地雷数&gt;\n/help\n\n<blockquote>\n{{.BotName}}\n作者: @feellmoose_dev\n版本：{{.Version}}\n更新时间：{{.Update}}\n</blockquote>",
+		"help.note":                       "@{{ .Username }}\n迷路的小猫咪要找帮助吗？本nya大人大发慈悲告诉你一点线索喵~\n\n/mine\n/mine &lt;宽&gt; &lt;高&gt; &lt;雷数&gt;\n/lang [zh|en|cxg]\n/lang_chat [zh|en|cxg]\n/help\n\n<blockquote>\n{{.BotName}}\n作者: @feellmoose_dev\n版本：{{.Version}}\n更新时间：{{.Update}}\n</blockquote>",
 	},
 }
 
