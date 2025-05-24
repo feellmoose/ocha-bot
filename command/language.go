@@ -40,10 +40,10 @@ func (l LanguageCommandExec) Language(c telebot.Context) error {
 		}
 		go c.Delete()
 	}
-	if err := l.repo.SetUserLanguageByContext(c, args[0]); err != nil {
+	lang := args[0]
+	if err := l.repo.SetUserLanguageByContext(c, lang); err != nil {
 		return err
 	}
-	lang := l.repo.Context(c)
 	text, err := helper.Messages[lang]["lang.note"].Execute(map[string]string{"Username": c.Sender().Username})
 	if err != nil {
 		return err
@@ -63,10 +63,10 @@ func (l LanguageCommandExec) LanguageChat(c telebot.Context) error {
 		}
 		go c.Delete()
 	}
-	if err := l.repo.SetChatLanguageIfAdminByContext(c, args[0]); err != nil {
+	lang := args[0]
+	if err := l.repo.SetChatLanguageIfAdminByContext(c, lang); err != nil {
 		return err
 	}
-	lang := l.repo.Context(c)
 	text, err := helper.Messages[lang]["lang.chat.note"].Execute(map[string]string{
 		"Username": c.Sender().Username,
 		"ChatName": c.Chat().Username,
