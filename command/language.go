@@ -3,6 +3,7 @@ package command
 import (
 	"gopkg.in/telebot.v4"
 	"ocha_server_bot/helper"
+	"strconv"
 )
 
 type LanguageCommandFunc interface {
@@ -17,6 +18,7 @@ type LanguageCommandFunc interface {
 
 type LanguageCommandExec struct {
 	repo *helper.LanguageRepo
+	menu *MenuCommandExec
 }
 
 func NewLanguageCommandExec(repo *helper.LanguageRepo) *LanguageCommandExec {
@@ -24,17 +26,21 @@ func NewLanguageCommandExec(repo *helper.LanguageRepo) *LanguageCommandExec {
 }
 
 func (l LanguageCommandExec) Language(c telebot.Context) error {
-	if len(c.Args()) == 1 {
-		if err := l.repo.SetUserLanguageByContext(c, c.Args()[0]); err != nil {
-			return err
-		}
-	} else {
-		if err := l.repo.SetUserLanguageByContext(c, "en"); err != nil {
-			return err
+	args := c.Args()
+	switch len(args) {
+	case 0:
+		return l.menu.RedirectTo(c, "lang")
+	case 2:
+		user, _ := strconv.ParseInt(args[1], 10, 64)
+		if c.Sender().ID != user {
+			return nil
 		}
 	}
+	if err := l.repo.SetUserLanguageByContext(c, args[0]); err != nil {
+		return err
+	}
 	lang := l.repo.Context(c)
-	text, err := helper.Messages[lang]["language.note"].Execute(map[string]string{"Username": c.Sender().Username})
+	text, err := helper.Messages[lang]["lang.note"].Execute(map[string]string{"Username": c.Sender().Username})
 	if err != nil {
 		return err
 	}
@@ -42,17 +48,24 @@ func (l LanguageCommandExec) Language(c telebot.Context) error {
 }
 
 func (l LanguageCommandExec) LanguageChat(c telebot.Context) error {
-	if len(c.Args()) == 1 {
-		if err := l.repo.SetChatLanguageIfAdminByContext(c, c.Args()[0]); err != nil {
-			return err
-		}
-	} else {
-		if err := l.repo.SetChatLanguageIfAdminByContext(c, "en"); err != nil {
-			return err
+	args := c.Args()
+	switch len(args) {
+	case 0:
+		return l.menu.RedirectTo(c, "lang_chat")
+	case 2:
+		user, _ := strconv.ParseInt(args[1], 10, 64)
+		if c.Sender().ID != user {
+			return nil
 		}
 	}
+	if err := l.repo.SetChatLanguageIfAdminByContext(c, args[0]); err != nil {
+		return err
+	}
 	lang := l.repo.Context(c)
-	text, err := helper.Messages[lang]["language.note"].Execute(map[string]string{"Username": c.Sender().Username})
+	text, err := helper.Messages[lang]["lang.chat.note"].Execute(map[string]string{
+		"Username": c.Sender().Username,
+		"ChatName": c.Chat().Username,
+	})
 	if err != nil {
 		return err
 	}

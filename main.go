@@ -14,10 +14,10 @@ func main() {
 	token := os.Getenv("BOT_TOKEN")
 	log.Printf("Bot starting with Token(token=%s)", token)
 	pref := telebot.Settings{
-		Token:   token,
-		Poller:  &telebot.LongPoller{Timeout: 10 * time.Second},
-		OnError: OnError,
+		Token:  token,
+		Poller: &telebot.LongPoller{Timeout: 10 * time.Second},
 	}
+
 	home, err := os.UserHomeDir()
 	if err != nil {
 		log.Fatal(err)
@@ -34,8 +34,6 @@ func main() {
 	repoLanguage := helper.NewFileRepo(home, "language")
 	repoMine := helper.NewFileRepo(home, "mine")
 
-	bot.Use(middleware.Recover())
-
 	langRepo := helper.NewLanguageRepo(repoLanguage)
 
 	menu := command.NewMenuCommandExec(langRepo)
@@ -50,10 +48,6 @@ func main() {
 	bot.Handle("\fquit", mine.Quit)
 	bot.Handle("\fclick", mine.Click)
 	bot.Handle("\fchange", mine.Change)
-	bot.Handle(telebot.OnCallback, func(context telebot.Context) error {
-		log.Printf("data=%v,args=%v", context.Callback().Data, context.Args())
-		return nil
-	})
 
 	bot.Handle("/help", help.Help)
 
@@ -62,11 +56,19 @@ func main() {
 
 	bot.Handle("/lang", lang.Language)
 	bot.Handle("/lang_chat", lang.LanguageChat)
+	bot.Handle("\flang", lang.Language)
+	bot.Handle("\flang_chat", lang.LanguageChat)
+
+	bot.Use(middleware.Recover(func(err error, c telebot.Context) {
+		log.Printf("Bot error: %v (in context: %v)", err, c.Text())
+		if err = c.Send(helper.Messages[langRepo.Context(c)]["error"].Execute(map[string]string{
+			"Username": c.Sender().Username,
+			"Message":  err.Error(),
+		})); err != nil {
+			log.Printf("Bot err Sent failed: %v", err)
+		}
+	}))
 
 	log.Println("Bot started")
 	bot.Start()
-}
-
-func OnError(err error, context telebot.Context) {
-	log.Printf("Bot error: %v (in context: %v)", err, context.Text())
 }

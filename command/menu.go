@@ -57,6 +57,16 @@ func (m MenuCommandExec) RedirectTo(c telebot.Context, args ...string) error {
 	switch menu {
 	case "cancel":
 		return c.Delete()
+	case "lang":
+		text, reply, err = language(user, topic, lang, c)
+		if err != nil {
+			return err
+		}
+	case "lang_chat":
+		text, reply, err = languageChat(user, topic, lang, c)
+		if err != nil {
+			return err
+		}
 	case "mine":
 		text, reply, err = mineClassic(user, topic, lang, c)
 		if err != nil {
@@ -213,6 +223,81 @@ func buttonClassic(user int64, topic int, lang string, width, height, mines int,
 			"menu",
 			"mine",
 			"jump",
+			strconv.FormatInt(user, 10),
+			strconv.Itoa(topic),
+		),
+	),
+	)
+	return text, reply, nil
+}
+
+func language(user int64, topic int, lang string, c telebot.Context) (string, *telebot.ReplyMarkup, error) {
+	text, _ := helper.Messages[lang]["lang.menu.note"].Execute(map[string]string{
+		"Username": c.Sender().Username,
+	})
+	reply := &telebot.ReplyMarkup{}
+	reply.Inline(reply.Row(
+		reply.Data(
+			helper.Messages[lang]["lang.en.button"].String(),
+			"lang",
+			"en",
+			strconv.FormatInt(user, 10),
+		),
+		reply.Data(
+			helper.Messages[lang]["lang.zh.button"].String(),
+			"lang",
+			"zh",
+			strconv.FormatInt(user, 10),
+		),
+		reply.Data(
+			helper.Messages[lang]["lang.cxg.button"].String(),
+			"lang",
+			"cxg",
+			strconv.FormatInt(user, 10),
+		),
+		reply.Data(
+			helper.Messages[lang]["menu.cancel.button"].String(),
+			"menu",
+			"cancel",
+			"cancel",
+			strconv.FormatInt(user, 10),
+			strconv.Itoa(topic),
+		),
+	),
+	)
+	return text, reply, nil
+}
+
+func languageChat(user int64, topic int, lang string, c telebot.Context) (string, *telebot.ReplyMarkup, error) {
+	text, _ := helper.Messages[lang]["lang.chat.menu.note"].Execute(map[string]string{
+		"Username": c.Sender().Username,
+		"ChatName": c.Chat().Username,
+	})
+	reply := &telebot.ReplyMarkup{}
+	reply.Inline(reply.Row(
+		reply.Data(
+			helper.Messages[lang]["lang.en.button"].String(),
+			"lang_chat",
+			"en",
+			strconv.FormatInt(user, 10),
+		),
+		reply.Data(
+			helper.Messages[lang]["lang.zh.button"].String(),
+			"lang_chat",
+			"zh",
+			strconv.FormatInt(user, 10),
+		),
+		reply.Data(
+			helper.Messages[lang]["lang.cxg.button"].String(),
+			"lang_chat",
+			"cxg",
+			strconv.FormatInt(user, 10),
+		),
+		reply.Data(
+			helper.Messages[lang]["menu.cancel.button"].String(),
+			"menu",
+			"cancel",
+			"cancel",
 			strconv.FormatInt(user, 10),
 			strconv.Itoa(topic),
 		),
