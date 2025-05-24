@@ -22,12 +22,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	repoLanguage := helper.NewFileRepo(home, "language")
-	repoMine := helper.NewFileRepo(home, "mine")
+
 	bot, err := telebot.NewBot(pref)
 	if err != nil {
 		log.Panicf("Error create bot: %v", err)
 	}
+
+	helper.BotName = bot.Me.Username
+	helper.BotID = bot.Me.ID
+
+	repoLanguage := helper.NewFileRepo(home, "language")
+	repoMine := helper.NewFileRepo(home, "mine")
 
 	bot.Use(middleware.Recover())
 
@@ -55,8 +60,8 @@ func main() {
 	bot.Handle("/menu", menu.Menu)
 	bot.Handle("\fmenu", menu.Menu)
 
-	bot.Handle("/language", lang.Language)
-	bot.Handle("/language_chat", lang.LanguageChat)
+	bot.Handle("/lang", lang.Language)
+	bot.Handle("/lang_chat", lang.LanguageChat)
 
 	log.Println("Bot started")
 	bot.Start()

@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -117,7 +118,7 @@ type FileRepo struct {
 
 func NewFileRepo(dir string, name string) *FileRepo {
 	var (
-		fn       = name + "_data.json"
+		fn       = name + "_" + strconv.FormatInt(BotID, 10) + "_data.json"
 		filename = filepath.Join(dir, fn)
 		file     *os.File
 		err      error
