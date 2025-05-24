@@ -93,7 +93,7 @@ var templates = map[string]map[string]string{
 		"lang.zh.button":                  "简体中文",
 		"lang.en.button":                  "English",
 		"lang.cxg.button":                 "nya大人",
-		"mine.game.quit.note":             "@{{ .Username }}\n成功退出游戏",
+		"mine.game.quit.note":             "@{{ .Username }}\n有笨蛋逃跑了呢~真是杂鱼！",
 		"menu.back.button":                "返回喵",
 		"menu.cancel.button":              "取消喵",
 		"mine.game.menu.easy.button":      "杂鱼",
