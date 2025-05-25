@@ -28,9 +28,9 @@ func (t Template) Execute(data any) (string, error) {
 
 var templates = map[string]map[string]string{
 	"en": {
-		"stat.all.note":                   "Bot:\nID: {{.BotID}}\nName: {{.BotName}}\nVersion: {{.Version}}\nUpdate: {{.Update}}\n<blockquote>Repos:\nRepoSize: {{.RepoSize}}\n{{.Repos}}\n{{.Mine}}</blockquote>\nAnalysis:\nTime: {{.Now}}",
+		"stat.all.note":                   "Stat report:\n<blockquote>Bot:\nID: {{.BotID}}\nName: {{.BotName}}\nVersion: {{.Version}}\nUpdate: {{.Update}}\n\nRepos:\nsize: {{.RepoSize}}\n{{.Repos}}\n{{.Mine}}\n\nAnalysis:\nTime: {{.Now}}</blockquote>",
 		"stat.repo.note":                  "Repo: {{ .Name }}\n\t| type: {{ .Type }}\n\t| size: {{ .DataSize }}\n\t| objs: {{ .ObjsSize }}\n",
-		"stat.game.mine.note":             "Mine-sweeper-game:\n\t| Running: {{.Running}}\n\t| Active: {{.Active}}\n\t| Total: {{.Total}}\n",
+		"stat.game.mine.note":             "Mine-sweeper-game:\n\t| running: {{.Running}}\n\t| active: {{.Active}}\n\t| total: {{.Total}}\n",
 		"lang.note":                       "@{{ .Username }}\nLanguage updated successfully",
 		"lang.chat.note":                  "@{{ .Username }}\nThe default language for chat group {{ .ChatName }} has been successfully updated",
 		"lang.menu.note":                  "@{{ .Username }}\nPlease click the button below to update your language setting saved in ocha. Your personal setting will take precedence over the chat group’s default language",
@@ -60,9 +60,9 @@ var templates = map[string]map[string]string{
 		"help.note":                       "@{{ .Username }}\nWelcome to ocha!\nHere are some commands to help you get started:\n\n/mine\n/mine  &lt;width&gt; &lt;height&gt; &lt;mines&gt;\n/lang  [ zh | en | cxg ]\n/lang_chat  [ zh | en | cxg ]\n/help\n\n<blockquote>\n{{.BotName}}\nAuthor: @feellmoose_dev\nVersion: {{.Version}}\nUpdated on: {{.Update}}\n</blockquote>",
 	},
 	"zh": {
-		"stat.all.note":                   "Bot:\nID: {{.BotID}}\nName: {{.BotName}}\nVersion: {{.Version}}\nUpdate: {{.Update}}\n<blockquote>Repos:\nRepoSize: {{.RepoSize}}\n{{.Repos}}\n{{.Mine}}</blockquote>\nAnalysis:\nTime: {{.Now}}",
+		"stat.all.note":                   "Stat report:\n<blockquote>Bot:\nID: {{.BotID}}\nName: {{.BotName}}\nVersion: {{.Version}}\nUpdate: {{.Update}}\n\nRepos:\nsize: {{.RepoSize}}\n{{.Repos}}\n{{.Mine}}\n\nAnalysis:\nTime: {{.Now}}</blockquote>",
 		"stat.repo.note":                  "Repo: {{ .Name }}\n\t| type: {{ .Type }}\n\t| size: {{ .DataSize }}\n\t| objs: {{ .ObjsSize }}\n",
-		"stat.game.mine.note":             "Mine-sweeper-game:\n\t| Running: {{.Running}}\n\t| Active: {{.Active}}\n\t| Total: {{.Total}}\n",
+		"stat.game.mine.note":             "Mine-sweeper-game:\n\t| running: {{.Running}}\n\t| active: {{.Active}}\n\t| total: {{.Total}}\n",
 		"lang.note":                       "@{{ .Username }}\n语言修改成功",
 		"lang.chat.note":                  "@{{ .Username }}\n本聊天群组 {{ .ChatName }} 的默认语言修改成功",
 		"lang.menu.note":                  "@{{ .Username }}\n请点击下方按钮修改您在 ocha 留存的语言设置，个人语言设置将优先于聊天群组的默认语言设置显示",
@@ -92,9 +92,9 @@ var templates = map[string]map[string]string{
 		"help.note":                       "@{{ .Username }}\n欢迎使用 ocha ！\n以下是一些帮助您入门的命令：\n\n/mine\n/mine  &lt; 宽 &gt; &lt; 高 &gt; &lt; 雷数 &gt;\n/lang  [ zh | en | cxg ]\n/lang_chat  [ zh | en | cxg ]\n/help\n\n<blockquote>\n{{.BotName}}\n作者: @feellmoose_dev\n版本信息:{{.Version}}\n更新于:{{.Update}}\n</blockquote>",
 	},
 	"cxg": {
-		"stat.all.note":                   "Bot:\nID: {{.BotID}}\nName: {{.BotName}}\nVersion: {{.Version}}\nUpdate: {{.Update}}\n<blockquote>Repos:\nRepoSize: {{.RepoSize}}\n{{.Repos}}\n{{.Mine}}</blockquote>\nAnalysis:\nTime: {{.Now}}",
+		"stat.all.note":                   "Stat report:\n<blockquote>Bot:\nID: {{.BotID}}\nName: {{.BotName}}\nVersion: {{.Version}}\nUpdate: {{.Update}}\n\nRepos:\nsize: {{.RepoSize}}\n{{.Repos}}\n{{.Mine}}\n\nAnalysis:\nTime: {{.Now}}</blockquote>",
 		"stat.repo.note":                  "Repo: {{ .Name }}\n\t| type: {{ .Type }}\n\t| size: {{ .DataSize }}\n\t| objs: {{ .ObjsSize }}\n",
-		"stat.game.mine.note":             "Mine-sweeper-game:\n\t| Running: {{.Running}}\n\t| Active: {{.Active}}\n\t| Total: {{.Total}}\n",
+		"stat.game.mine.note":             "Mine-sweeper-game:\n\t| running: {{.Running}}\n\t| active: {{.Active}}\n\t| total: {{.Total}}\n",
 		"lang.note":                       "@{{ .Username }}\n哼哼！本nya大人已经优雅地把你的语言换好啦！快感谢我吧！",
 		"lang.chat.note":                  "@{{ .Username }}\n哼哼！本nya大人已经优雅地把聊天群组 {{ .ChatName }} 的默认语言换好啦！快感谢我吧！",
 		"lang.menu.note":                  "@{{ .Username }}\n快点自己选一个语言记录在nya大人的小本本上哦 ~ 不要让本喵亲自动手！咱才不会承认这个语言会比群组默认的那个要重要得多呢！哼！",

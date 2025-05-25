@@ -57,8 +57,8 @@ func (s Serialized) Deserialize() Mine {
 
 // Position for each Steps
 type Position struct {
-	X int
-	Y int
+	X int `json:"x,omitempty"`
+	Y int `json:"y,omitempty"`
 }
 
 func (p Position) InBounds(width, height int) bool {
@@ -67,10 +67,10 @@ func (p Position) InBounds(width, height int) bool {
 
 // History for rollback
 type History struct {
-	Pos     Position
-	Option  GameOption
-	Updated time.Time
-	Related []History
+	Pos     Position   `json:"pos,omitempty"`
+	Option  GameOption `json:"option,omitempty"`
+	Updated time.Time  `json:"updated,omitempty"`
+	Related []History  `json:"related,omitempty"`
 }
 
 // GameStatus for Steps and Win check

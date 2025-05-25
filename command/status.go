@@ -75,7 +75,7 @@ func (s *StatusCommandExec) Status(c telebot.Context) error {
 		"RepoSize": strconv.Itoa(len(s.repos)),
 		"Repos":    repos,
 		"Mine":     m,
-		"Now":      time.Now().String(),
+		"Now":      time.Now().Format("2006-01-02 15:04:05"),
 	})
 	if err != nil {
 		return err
@@ -91,8 +91,8 @@ func (s *StatusCommandExec) analysisMineGame() (active, running, total int) {
 		if repo.Name() == "mine" {
 			after := time.Now().Add(-2 * time.Minute)
 			repo.Range(func(key, value any) bool {
+				total++
 				if game, ok := value.(mine.Serialized); ok {
-					total++
 					if game.Status == mine.Running {
 						running++
 						if game.Update.After(after) {
