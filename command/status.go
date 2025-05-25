@@ -90,18 +90,26 @@ func (s *StatusCommandExec) analysisMineGame() (active, running, total int) {
 	for _, repo := range s.repos {
 		if repo.Name() == "mine" {
 			after := time.Now().Add(-2 * time.Minute)
-			repo.Range(func(key, value any) bool {
-				total++
+			del := make([]string, 0)
+			repo.Range(func(k, value any) bool {
 				if game, ok := value.(mine.Serialized); ok {
+					total++
 					if game.Status == mine.Running {
 						running++
 						if game.Update.After(after) {
 							active++
 						}
 					}
+				} else {
+					if key, ok := k.(string); ok {
+						del = append(del, key)
+					}
 				}
 				return true
 			})
+			for _, key := range del {
+				repo.Del(key)
+			}
 		}
 	}
 	return active, running, total
