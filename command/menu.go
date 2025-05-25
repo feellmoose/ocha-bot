@@ -10,18 +10,20 @@ import (
 // MenuCommandFunc support commands:
 type MenuCommandFunc interface {
 	Menu(c telebot.Context) error
+	RedirectTo(c telebot.Context, args ...string) error
+	RedirectToButtonClassic(width, height, mines int, c telebot.Context) error
 }
 
 /*
 /menu menu_id [jump|create] user topic
 */
 
-func NewMenuCommandExec(repo *helper.LanguageRepo) *MenuCommandExec {
+func NewMenuCommandExec(repo helper.LanguageRepoFunc) *MenuCommandExec {
 	return &MenuCommandExec{repo: repo}
 }
 
 type MenuCommandExec struct {
-	repo *helper.LanguageRepo
+	repo helper.LanguageRepoFunc
 }
 
 // RedirectTo menu_id [jump|create] [user] [topic]

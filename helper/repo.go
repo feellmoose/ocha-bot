@@ -16,7 +16,20 @@ type Repo interface {
 	Get(key string) (interface{}, bool)
 	Put(key string, value interface{}) bool
 	Del(key string) bool
+	Range(f func(key, value any) bool)
+	Size() int
+	Name() string
+	Type() string
+	Stop()
 }
+
+type RepoType string
+
+const (
+	Memory RepoType = "Memory"
+	File   RepoType = "File"
+	None   RepoType = "None"
+)
 
 type Item struct {
 	value      interface{}
@@ -24,14 +37,16 @@ type Item struct {
 }
 
 type MemRepo struct {
+	name    string
 	data    sync.Map
 	cleanup *time.Ticker
 	ttl     time.Duration
 	stop    chan struct{}
 }
 
-func NewMemRepo() *MemRepo {
+func NewMemRepo(name string) *MemRepo {
 	repo := &MemRepo{
+		name:    name,
 		stop:    make(chan struct{}),
 		cleanup: time.NewTicker(1 * time.Second),
 		ttl:     time.Hour,
@@ -65,6 +80,46 @@ func (r *MemRepo) cleanupExpired() {
 func (r *MemRepo) Stop() {
 	close(r.stop)
 	r.cleanup.Stop()
+}
+
+func (r *MemRepo) Type() string {
+	return string(Memory)
+}
+
+func (r *MemRepo) Name() string {
+	return r.name
+}
+
+func (r *MemRepo) Size() int {
+	count := 0
+	r.data.Range(func(key, value interface{}) bool {
+		item, ok := value.(Item)
+		if !ok {
+			return true
+		}
+		if time.Now().After(item.expiration) {
+			r.Del(key.(string))
+		} else {
+			count++
+		}
+		return true
+	})
+	return count
+}
+
+func (r *MemRepo) Range(f func(key, value interface{}) bool) {
+	r.data.Range(func(k, v interface{}) bool {
+		item, ok := v.(Item)
+		if !ok {
+			return true
+		}
+		if time.Now().After(item.expiration) {
+			r.Del(k.(string))
+		} else {
+			return f(k, v)
+		}
+		return true
+	})
 }
 
 func (r *MemRepo) Get(key string) (interface{}, bool) {
@@ -109,11 +164,12 @@ func (r *MemRepo) Del(key string) bool {
 }
 
 type FileRepo struct {
-	dir     string
-	name    string
-	data    *sync.Map
-	sticker *time.Ticker
-	stop    chan struct{}
+	dir      string
+	name     string
+	filename string
+	data     *sync.Map
+	sticker  *time.Ticker
+	stop     chan struct{}
 }
 
 func NewFileRepo(dir string, name string) *FileRepo {
@@ -160,11 +216,12 @@ func NewFileRepo(dir string, name string) *FileRepo {
 	}
 
 	repo := &FileRepo{
-		dir:     dir,
-		name:    fn,
-		data:    &data,
-		stop:    make(chan struct{}),
-		sticker: time.NewTicker(5 * time.Second),
+		dir:      dir,
+		name:     name,
+		filename: fn,
+		data:     &data,
+		stop:     make(chan struct{}),
+		sticker:  time.NewTicker(5 * time.Second),
 	}
 
 	go repo.loop()
@@ -212,7 +269,7 @@ func (r *FileRepo) Sync() error {
 		return err
 	}
 
-	dst, err := os.Create(filepath.Join(r.dir, r.name))
+	dst, err := os.Create(filepath.Join(r.dir, r.filename))
 	if err != nil {
 		return err
 	}
@@ -229,6 +286,35 @@ func (r *FileRepo) Sync() error {
 	}
 
 	return nil
+}
+
+func (r *FileRepo) Type() string {
+	return string(File)
+}
+
+func (r *FileRepo) Name() string {
+	return r.name
+}
+
+func (r *FileRepo) DataSize() int64 {
+	fileInfo, err := os.Stat(filepath.Join(r.dir, r.filename))
+	if err != nil {
+		return 0
+	}
+	return fileInfo.Size()
+}
+
+func (r *FileRepo) Size() int {
+	count := 0
+	r.data.Range(func(_, _ any) bool {
+		count++
+		return true
+	})
+	return count
+}
+
+func (r *FileRepo) Range(f func(key, value interface{}) bool) {
+	r.data.Range(f)
 }
 
 func (r *FileRepo) Stop() {

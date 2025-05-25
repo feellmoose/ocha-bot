@@ -36,10 +36,10 @@ type HelpCommandFunc interface {
 */
 
 type HelpCommandExec struct {
-	repo *helper.LanguageRepo
+	repo helper.LanguageRepoFunc
 }
 
-func NewHelpCommandExec(repo *helper.LanguageRepo) *HelpCommandExec {
+func NewHelpCommandExec(repo helper.LanguageRepoFunc) *HelpCommandExec {
 	return &HelpCommandExec{repo: repo}
 }
 

@@ -29,13 +29,13 @@ type MineCommandFunc interface {
 
 type MineCommandExec struct {
 	repo     helper.Repo
-	langRepo *helper.LanguageRepo
-	id       *helper.GenRandomRepoShortID
+	langRepo helper.LanguageRepoFunc
+	id       helper.GenID
 	factory  mine.Factory
-	menu     *MenuCommandExec
+	menu     MenuCommandFunc
 }
 
-func NewMineCommandExec(repo helper.Repo, langRepo *helper.LanguageRepo, menu *MenuCommandExec) *MineCommandExec {
+func NewMineCommandExec(repo helper.Repo, langRepo helper.LanguageRepoFunc, menu MenuCommandFunc) *MineCommandExec {
 	return &MineCommandExec{
 		repo:     repo,
 		langRepo: langRepo,

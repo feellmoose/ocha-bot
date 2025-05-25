@@ -43,6 +43,7 @@ func main() {
 	mine := command.NewMineCommandExec(repoMine, langRepo, menu)
 	help := command.NewHelpCommandExec(langRepo)
 	lang := command.NewLanguageCommandExec(langRepo, menu)
+	stat := command.NewStatusCommandExec([]helper.Repo{repoLanguage, repoMine}, langRepo)
 
 	bot.Use(middleware.Recover(func(err error, c telebot.Context) {
 		log.Printf("Bot error: %v (in context: %v)", err, c.Text())
@@ -71,6 +72,9 @@ func main() {
 	bot.Handle("/lang_chat", lang.LanguageChat)
 	bot.Handle("\flang", lang.Language)
 	bot.Handle("\flang_chat", lang.LanguageChat)
+
+	bot.Handle("/stat", stat.Status)
+	bot.Handle("/stat_mine", stat.StatusMine)
 
 	log.Println("Bot started")
 	bot.Start()

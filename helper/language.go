@@ -6,6 +6,13 @@ import (
 	"strconv"
 )
 
+type LanguageRepoFunc interface {
+	Lang(lang string) string
+	Context(c telebot.Context) string
+	SetChatLanguageIfAdminByContext(c telebot.Context, lang string) error
+	SetUserLanguageByContext(c telebot.Context, lang string) error
+}
+
 type LanguageRepo struct {
 	repo Repo
 }

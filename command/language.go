@@ -17,11 +17,11 @@ type LanguageCommandFunc interface {
 */
 
 type LanguageCommandExec struct {
-	repo *helper.LanguageRepo
-	menu *MenuCommandExec
+	repo helper.LanguageRepoFunc
+	menu MenuCommandFunc
 }
 
-func NewLanguageCommandExec(repo *helper.LanguageRepo, menu *MenuCommandExec) *LanguageCommandExec {
+func NewLanguageCommandExec(repo helper.LanguageRepoFunc, menu MenuCommandFunc) *LanguageCommandExec {
 	return &LanguageCommandExec{
 		repo: repo,
 		menu: menu,
