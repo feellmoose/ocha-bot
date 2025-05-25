@@ -48,6 +48,9 @@ func (m MenuCommandExec) RedirectTo(c telebot.Context, args ...string) error {
 		menu, opt = args[0], args[1]
 		user, _ = strconv.ParseInt(args[2], 10, 64)
 		topic, _ = strconv.Atoi(args[3])
+		if user != c.Sender().ID {
+			return nil
+		}
 	default:
 		return errors.New("menu args len error")
 	}
