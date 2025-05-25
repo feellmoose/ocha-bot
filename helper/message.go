@@ -28,7 +28,7 @@ func (t Template) Execute(data any) (string, error) {
 
 var templates = map[string]map[string]string{
 	"en": {
-		"stat.all.note":                   "Stat report:\n<pre>Bot:\nID: {{.BotID}}\nName: {{.BotName}}\nVersion: {{.Version}}\nUpdate: {{.Update}}\n\nRepos:\nsize: {{.RepoSize}}\n{{.Repos}}\n{{.Mine}}\n\nAnalysis:\nTime: {{.Now}}</pre>",
+		"stat.all.note":                   "Stat report:\n<blockquote expandable>Bot:\nID: {{.BotID}}\nName: {{.BotName}}\nVersion: {{.Version}}\nUpdate: {{.Update}}\n\nRepos:\nsize: {{.RepoSize}}\n{{.Repos}}\n{{.Mine}}\n\nAnalysis:\nTime: {{.Now}}</blockquote>",
 		"stat.repo.note":                  "Repo: {{ .Name }}\n\t| type: {{ .Type }}\n\t| size: {{ .DataSize }}\n\t| objs: {{ .ObjsSize }}\n",
 		"stat.game.mine.note":             "Mine-sweeper-game:\n\t| running: {{.Running}}\n\t| active: {{.Active}}\n\t| total: {{.Total}}",
 		"lang.note":                       "@{{ .Username }}\nLanguage updated successfully",
@@ -57,10 +57,10 @@ var templates = map[string]map[string]string{
 		"mine.game.opt.flag":              "Flag",
 		"mine.game.opt.click":             "Sweep",
 		"error":                           "@{{ .Username }} Oops! Something went wrong! {{.Message}}!",
-		"help.note":                       "@{{ .Username }}\nWelcome to ocha!\nHere are some commands to help you get started:\n/mine\n/mine  &lt;width&gt; &lt;height&gt; &lt;mines&gt;\n/lang  [ zh | en | cxg ]\n/lang_chat  [ zh | en | cxg ]\n/help\n<pre>{{.BotName}}\nAuthor: @feellmoose_dev\nVersion: {{.Version}}\nUpdated on: {{.Update}}\n</pre>",
+		"help.note":                       "@{{ .Username }}\nWelcome to ocha!\nHere are some commands to help you get started:\n/mine\n/mine  &lt;width&gt; &lt;height&gt; &lt;mines&gt;\n/lang  [ zh | en | cxg ]\n/lang_chat  [ zh | en | cxg ]\n/help\n<blockquote expandable>{{.BotName}}\nAuthor: @feellmoose_dev\nVersion: {{.Version}}\nUpdated on: {{.Update}}\n</blockquote>",
 	},
 	"zh": {
-		"stat.all.note":                   "Stat report:\n<pre>Bot:\nID: {{.BotID}}\nName: {{.BotName}}\nVersion: {{.Version}}\nUpdate: {{.Update}}\n\nRepos:\nsize: {{.RepoSize}}\n{{.Repos}}\n{{.Mine}}\n\nAnalysis:\nTime: {{.Now}}</pre>",
+		"stat.all.note":                   "Stat report:\n<blockquote expandable>Bot:\nID: {{.BotID}}\nName: {{.BotName}}\nVersion: {{.Version}}\nUpdate: {{.Update}}\n\nRepos:\nsize: {{.RepoSize}}\n{{.Repos}}\n{{.Mine}}\n\nAnalysis:\nTime: {{.Now}}</blockquote>",
 		"stat.repo.note":                  "Repo: {{ .Name }}\n\t| type: {{ .Type }}\n\t| size: {{ .DataSize }}\n\t| objs: {{ .ObjsSize }}\n",
 		"stat.game.mine.note":             "Mine-sweeper-game:\n\t| running: {{.Running}}\n\t| active: {{.Active}}\n\t| total: {{.Total}}",
 		"lang.note":                       "@{{ .Username }}\n语言修改成功",
@@ -89,10 +89,10 @@ var templates = map[string]map[string]string{
 		"mine.game.opt.flag":              "插旗",
 		"mine.game.opt.click":             "扫雷",
 		"error":                           "@{{ .Username }} 哎呀！出了点问题！{{.Message}}！",
-		"help.note":                       "@{{ .Username }}\n欢迎使用 ocha ！\n以下是一些帮助您入门的命令：\n/mine\n/mine  &lt; 宽 &gt; &lt; 高 &gt; &lt; 雷数 &gt;\n/lang  [ zh | en | cxg ]\n/lang_chat  [ zh | en | cxg ]\n/help\n<pre>{{.BotName}}\n作者: @feellmoose_dev\n版本信息:{{.Version}}\n更新于:{{.Update}}\n</pre>",
+		"help.note":                       "@{{ .Username }}\n欢迎使用 ocha ！\n以下是一些帮助您入门的命令：\n/mine\n/mine  &lt; 宽 &gt; &lt; 高 &gt; &lt; 雷数 &gt;\n/lang  [ zh | en | cxg ]\n/lang_chat  [ zh | en | cxg ]\n/help\n<blockquote expandable>{{.BotName}}\n作者: @feellmoose_dev\n版本信息:{{.Version}}\n更新于:{{.Update}}\n</blockquote>",
 	},
 	"cxg": {
-		"stat.all.note":                   "Stat report:\n<pre>Bot:\nID: {{.BotID}}\nName: {{.BotName}}\nVersion: {{.Version}}\nUpdate: {{.Update}}\n\nRepos:\nsize: {{.RepoSize}}\n{{.Repos}}\n{{.Mine}}\n\nAnalysis:\nTime: {{.Now}}</pre>",
+		"stat.all.note":                   "Stat report:\n<blockquote expandable>Bot:\nID: {{.BotID}}\nName: {{.BotName}}\nVersion: {{.Version}}\nUpdate: {{.Update}}\n\nRepos:\nsize: {{.RepoSize}}\n{{.Repos}}\n{{.Mine}}\n\nAnalysis:\nTime: {{.Now}}</blockquote>",
 		"stat.repo.note":                  "Repo: {{ .Name }}\n\t| type: {{ .Type }}\n\t| size: {{ .DataSize }}\n\t| objs: {{ .ObjsSize }}\n",
 		"stat.game.mine.note":             "Mine-sweeper-game:\n\t| running: {{.Running}}\n\t| active: {{.Active}}\n\t| total: {{.Total}}",
 		"lang.note":                       "@{{ .Username }}\n哼哼！本nya大人已经优雅地把你的语言换好啦！快感谢我吧！",
@@ -121,7 +121,7 @@ var templates = map[string]map[string]string{
 		"mine.game.win.note":              "@{{ .Username }}\n你竟然赢了喵！？哼哼~你是不是偷偷作弊了？不然怎么可能在 {{ .Seconds }} 秒就完成地图：{{ .Width }}×{{ .Height }}，地雷数：{{ .Mines }} 个！\n本nya大人才没那么容易认输呢~下次让你哭着投降！",
 		"mine.game.lose.note":             "@{{ .Username }}\n砰～💣哇咔咔~你爆炸啦~本nya大人就知道你会踩雷喵！\n时间：{{ .Seconds }} 秒，地图：{{ .Width }}×{{ .Height }}，雷数：{{ .Mines }}。\n可怜兮兮的小笨蛋，要不要本nya大人抱抱呀~？嘻嘻~",
 		"error":                           "@{{ .Username }} 哎呀出错了喵～你果然不行呢~连 {{ .Message }} 都搞不清楚~要不要本nya大人教教你啊？喵呼呼~",
-		"help.note":                       "@{{ .Username }}\n迷路的小猫咪要找帮助吗？本nya大人大发慈悲告诉你一点线索喵~\n/mine\n/mine  &lt; 宽 &gt; &lt; 高 &gt; &lt; 雷数 &gt;\n/lang  [ zh | en | cxg ]\n/lang_chat  [ zh | en | cxg ]\n/help\n<pre>{{.BotName}}\n作者: @feellmoose_dev\n版本：{{.Version}}\n更新时间：{{.Update}}\n</pre>",
+		"help.note":                       "@{{ .Username }}\n迷路的小猫咪要找帮助吗？本nya大人大发慈悲告诉你一点线索喵~\n/mine\n/mine  &lt; 宽 &gt; &lt; 高 &gt; &lt; 雷数 &gt;\n/lang  [ zh | en | cxg ]\n/lang_chat  [ zh | en | cxg ]\n/help\n<blockquote expandable>{{.BotName}}\n作者: @feellmoose_dev\n版本：{{.Version}}\n更新时间：{{.Update}}\n</blockquote>",
 	},
 }
 
