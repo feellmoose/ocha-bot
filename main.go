@@ -35,8 +35,8 @@ func main() {
 	helper.BotName = bot.Me.Username
 	helper.BotID = bot.Me.ID
 
+	repoMine := helper.NewMemRepo("mine")
 	repoLanguage := helper.NewFileRepo(home, "language")
-	repoMine := helper.NewFileRepo(home, "mine")
 	repoRank := helper.NewFileRepo(home, "mine_rank")
 
 	langRepo := helper.NewLanguageRepo(repoLanguage)
@@ -52,7 +52,7 @@ func main() {
 	mi := command.NewMineCommandExec(repoMine, rank, langRepo, menu)
 	help := command.NewHelpCommandExec(langRepo)
 	lang := command.NewLanguageCommandExec(langRepo, menu)
-	stat := command.NewStatusCommandExec([]helper.Repo{repoLanguage, repoMine, repoRank}, langRepo)
+	stat := command.NewStatusCommandExec([]helper.Repo{repoLanguage, repoRank, repoMine}, langRepo)
 
 	bot.Use(middleware.Recover(func(err error, c telebot.Context) {
 		log.Printf("Bot error: %v (in context: %v)", err, c.Text())
