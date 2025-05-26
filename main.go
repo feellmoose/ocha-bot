@@ -35,7 +35,7 @@ func main() {
 	helper.BotName = bot.Me.Username
 	helper.BotID = bot.Me.ID
 
-	repoMine := helper.NewMemRepo[mine.Serialized]("mine")
+	repoMine := helper.NewFileRepo[mine.Serialized](home, "mine")
 	repoLanguage := helper.NewFileRepo[string](home, "language")
 	repoRank := helper.NewFileRepo[mine.TelegramMineGameScore](home, "mine_rank")
 
