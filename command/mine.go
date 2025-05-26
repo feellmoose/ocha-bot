@@ -109,10 +109,13 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 func (m *MineCommandExec) MineRank(c telebot.Context) error {
 	l := m.langRepo.Context(c)
 	lines := ""
-	for _, rank := range m.rank.Items() {
+	for i, rank := range m.rank.Items() {
+		if i > 50 {
+			break
+		}
 		score := rank.Item
 		text, err := helper.Messages[l]["mine.game.rank.line.note"].Execute(map[string]string{
-			"Index":    strconv.Itoa(rank.Index),
+			"Index":    strconv.Itoa(rank.Index + 1),
 			"Score":    strconv.FormatFloat(rank.Score, 'f', 2, 64),
 			"Duration": strconv.FormatInt(score.Duration, 10) + "ms",
 			"Username": score.Username,
