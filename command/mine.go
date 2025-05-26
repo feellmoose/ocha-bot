@@ -11,6 +11,7 @@ import (
 // MineCommandFunc support commands:
 type MineCommandFunc interface {
 	Mine(c telebot.Context) error
+	MineR(c telebot.Context) error
 	MineRank(c telebot.Context) error
 	Click(c telebot.Context) error
 	Flag(c telebot.Context) error
@@ -105,6 +106,10 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 }
 
 func (m *MineCommandExec) MineRank(c telebot.Context) error {
+
+}
+
+func (m *MineCommandExec) MineR(c telebot.Context) error {
 	var (
 		width   int
 		height  int

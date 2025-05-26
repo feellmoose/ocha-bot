@@ -52,7 +52,7 @@ func main() {
 	mi := command.NewMineCommandExec(repoMine, rank, langRepo, menu)
 	help := command.NewHelpCommandExec(langRepo)
 	lang := command.NewLanguageCommandExec(langRepo, menu)
-	stat := command.NewStatusCommandExec([]helper.Repo{repoLanguage, repoMine}, langRepo)
+	stat := command.NewStatusCommandExec([]helper.Repo{repoLanguage, repoMine, repoRank}, langRepo)
 
 	bot.Use(middleware.Recover(func(err error, c telebot.Context) {
 		log.Printf("Bot error: %v (in context: %v)", err, c.Text())
@@ -72,7 +72,8 @@ func main() {
 	bot.Handle("\fclick", mi.Click)
 	bot.Handle("\fchange", mi.Change)
 
-	bot.Handle("\fmine_r", mi.MineRank)
+	bot.Handle("/mine_r", mi.MineRank)
+	bot.Handle("\fmine_r", mi.MineR)
 
 	bot.Handle("/help", help.Help)
 
