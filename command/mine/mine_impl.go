@@ -8,6 +8,47 @@ type TelegramMineGame struct {
 	data Serialized
 	info Additional
 }
+type TelegramMineGameScore struct {
+	Username string  `json:"username,omitempty"`
+	Time     string  `json:"time,omitempty"`
+	Duration int64   `json:"duration,omitempty"`
+	Score    float64 `json:"score,omitempty"`
+	Steps    int     `json:"steps,omitempty"`
+	Mines    int     `json:"mines,omitempty"`
+	Width    int     `json:"width,omitempty"`
+	Height   int     `json:"height,omitempty"`
+}
+
+func (t TelegramMineGame) Score() TelegramMineGameScore {
+	var (
+		width    = t.data.Width
+		height   = t.data.Height
+		mines    = t.data.Mines
+		steps    = t.data.Steps
+		duration = t.Duration().Microseconds()
+		safe     = width*height - mines
+		baseTime = float64(safe) * 0.5
+	)
+
+	totalCells := float64(width * height)
+	diff := float64(mines) / totalCells
+	const kd = 0.5
+	diffScore := diff / (diff + kd)
+
+	T := t.Duration().Seconds()
+	timeScore := baseTime / (baseTime + T)
+
+	return TelegramMineGameScore{
+		Username: t.info.Username,
+		Time:     time.Now().Format("2006-01-02 15:04:05"),
+		Duration: duration,
+		Score:    100 * (diffScore + timeScore) / 2,
+		Steps:    steps,
+		Mines:    mines,
+		Width:    width,
+		Height:   height,
+	}
+}
 
 func (t TelegramMineGame) OnInfoChanged(additional Additional) Mine {
 	return TelegramMineGame{

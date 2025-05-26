@@ -77,6 +77,11 @@ func (m MenuCommandExec) RedirectTo(c telebot.Context, args ...string) error {
 		if err != nil {
 			return err
 		}
+	case "mine_r":
+		text, reply, err = buttonRank(user, topic, lang, 8, 8, 10, c)
+		if err != nil {
+			return err
+		}
 	case "mine_random":
 		text, reply, err = buttonRandom(user, topic, lang, c)
 		if err != nil {
@@ -136,30 +141,40 @@ func mineClassic(user int64, topic int, lang string, c telebot.Context) (string,
 	reply := &telebot.ReplyMarkup{}
 	reply.Inline(reply.Row(
 		reply.Data(
-			helper.Messages[lang]["mine.game.menu.easy.button"].String(),
+			helper.Messages[lang]["mine.game.menu.rank.button"].String(),
 			"menu",
-			"mine_easy",
-			"jump",
-			strconv.FormatInt(user, 10),
-			strconv.Itoa(topic),
-		),
-		reply.Data(
-			helper.Messages[lang]["mine.game.menu.normal.button"].String(),
-			"menu",
-			"mine_normal",
-			"jump",
-			strconv.FormatInt(user, 10),
-			strconv.Itoa(topic),
-		),
-		reply.Data(
-			helper.Messages[lang]["mine.game.menu.hard.button"].String(),
-			"menu",
-			"mine_hard",
+			"mine_r",
 			"jump",
 			strconv.FormatInt(user, 10),
 			strconv.Itoa(topic),
 		),
 	),
+		reply.Row(
+			reply.Data(
+				helper.Messages[lang]["mine.game.menu.easy.button"].String(),
+				"menu",
+				"mine_easy",
+				"jump",
+				strconv.FormatInt(user, 10),
+				strconv.Itoa(topic),
+			),
+			reply.Data(
+				helper.Messages[lang]["mine.game.menu.normal.button"].String(),
+				"menu",
+				"mine_normal",
+				"jump",
+				strconv.FormatInt(user, 10),
+				strconv.Itoa(topic),
+			),
+			reply.Data(
+				helper.Messages[lang]["mine.game.menu.hard.button"].String(),
+				"menu",
+				"mine_hard",
+				"jump",
+				strconv.FormatInt(user, 10),
+				strconv.Itoa(topic),
+			),
+		),
 		reply.Row(
 			reply.Data(
 				helper.Messages[lang]["mine.game.menu.nightmare.button"].String(),
@@ -203,6 +218,37 @@ func buttonRandom(user int64, topic int, lang string, c telebot.Context) (string
 	})
 	mines := int(float64(width*height) * density)
 	return buttonClassic(user, topic, lang, width, height, mines, c)
+}
+
+func buttonRank(user int64, topic int, lang string, width, height, mines int, c telebot.Context) (string, *telebot.ReplyMarkup, error) {
+	reply := &telebot.ReplyMarkup{}
+	text, _ := helper.Messages[lang]["mine.game.rank.start.note"].Execute(map[string]string{
+		"Username": c.Sender().Username,
+		"Width":    strconv.Itoa(width),
+		"Height":   strconv.Itoa(height),
+		"Mines":    strconv.Itoa(mines),
+	})
+	reply.Inline(reply.Row(
+		reply.Data(
+			helper.Messages[lang]["mine.game.start.button"].String(),
+			"mine_r",
+			strconv.Itoa(width),
+			strconv.Itoa(height),
+			strconv.Itoa(mines),
+			strconv.FormatInt(user, 10),
+			strconv.Itoa(topic),
+		),
+		reply.Data(
+			helper.Messages[lang]["menu.back.button"].String(),
+			"menu",
+			"mine",
+			"jump",
+			strconv.FormatInt(user, 10),
+			strconv.Itoa(topic),
+		),
+	),
+	)
+	return text, reply, nil
 }
 
 func buttonClassic(user int64, topic int, lang string, width, height, mines int, c telebot.Context) (string, *telebot.ReplyMarkup, error) {

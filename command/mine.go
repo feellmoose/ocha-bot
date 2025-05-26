@@ -11,6 +11,7 @@ import (
 // MineCommandFunc support commands:
 type MineCommandFunc interface {
 	Mine(c telebot.Context) error
+	MineRank(c telebot.Context) error
 	Click(c telebot.Context) error
 	Flag(c telebot.Context) error
 	Change(c telebot.Context) error
@@ -33,14 +34,21 @@ type MineCommandExec struct {
 	id       helper.GenID
 	factory  mine.Factory
 	menu     MenuCommandFunc
+	rank     helper.Ranker
 }
 
-func NewMineCommandExec(repo helper.Repo, langRepo helper.LanguageRepoFunc, menu MenuCommandFunc) *MineCommandExec {
+func NewMineCommandExec(
+	repo helper.Repo,
+	rank helper.Ranker,
+	langRepo helper.LanguageRepoFunc,
+	menu MenuCommandFunc,
+) *MineCommandExec {
 	return &MineCommandExec{
 		repo:     repo,
 		langRepo: langRepo,
 		factory:  mine.Factory{},
 		id:       helper.NewGenRandomRepoShortID(4, 16, 5, repo),
+		rank:     rank,
 		menu:     menu,
 	}
 }
@@ -92,6 +100,49 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 		user,
 		chat,
 		m.langRepo.Context(c),
+		mine.Classic,
+		c)
+}
+
+func (m *MineCommandExec) MineRank(c telebot.Context) error {
+	var (
+		width   int
+		height  int
+		mines   int
+		message int
+		topic   int
+		user    int64
+		chat    int64
+	)
+	if c.Callback() != nil {
+
+		args := c.Args()
+		if len(args) != 5 {
+			return errors.New("mine callback args len != 5")
+		}
+
+		message = c.Callback().Message.ID
+		chat = c.Callback().Message.Chat.ID
+		width, _ = strconv.Atoi(args[0])
+		height, _ = strconv.Atoi(args[1])
+		mines, _ = strconv.Atoi(args[2])
+		user, _ = strconv.ParseInt(args[3], 10, 64)
+		topic, _ = strconv.Atoi(args[4])
+
+		if user != c.Sender().ID {
+			return nil
+		}
+	} else if c.Message() != nil {
+		return nil
+	}
+	return m.mine(
+		width, height, mines,
+		message,
+		topic,
+		user,
+		chat,
+		m.langRepo.Context(c),
+		mine.Rank,
 		c)
 }
 
@@ -121,15 +172,16 @@ func (m *MineCommandExec) Quit(c telebot.Context) error {
 	return m.quit(c.Args()[0], c.Sender().ID, c)
 }
 
-func (m *MineCommandExec) mine(width, height, mines, message, topic int, user, chat int64, locale string, c telebot.Context) error {
+func (m *MineCommandExec) mine(width, height, mines, message, topic int, user, chat int64, locale string, t mine.GameType, c telebot.Context) error {
 	return m.id.WithID(func(id string) error {
 		game, err := m.factory.Empty(id, user, mine.Additional{
-			Type:    mine.ClassicBottom,
-			Button:  mine.BClick,
-			Locale:  locale,
-			Topic:   topic,
-			Chat:    chat,
-			Message: message,
+			Type:     t,
+			Button:   mine.BClick,
+			Locale:   locale,
+			Topic:    topic,
+			Chat:     chat,
+			Message:  message,
+			Username: c.Sender().Username,
 		}, width, height, mines)
 		if err != nil {
 			return err
@@ -137,7 +189,14 @@ func (m *MineCommandExec) mine(width, height, mines, message, topic int, user, c
 		if !m.repo.Put(id, game.Serialize()) {
 			return errors.New("put repo failed")
 		}
-		return game.Display(c)
+		switch game.Infos().Type {
+		case mine.ClassicBottom, mine.Classic:
+			return game.Display(c)
+		case mine.Rank:
+			return game.RankDisplay(c, m.rank)
+		default:
+			return game.Display(c)
+		}
 	})
 }
 
@@ -159,7 +218,14 @@ func (m *MineCommandExec) click(id string, user int64, x, y int, c telebot.Conte
 		if !m.repo.Put(id, game.Serialize()) {
 			return errors.New("put repo failed")
 		}
-		return game.Display(c)
+		switch game.Infos().Type {
+		case mine.ClassicBottom, mine.Classic:
+			return game.Display(c)
+		case mine.Rank:
+			return game.RankDisplay(c, m.rank)
+		default:
+			return game.Display(c)
+		}
 	}
 	return nil
 }

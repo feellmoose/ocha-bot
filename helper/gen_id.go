@@ -2,12 +2,29 @@ package helper
 
 import (
 	"errors"
+	"fmt"
 	"sync"
+	"time"
 )
 
 type GenID interface {
 	NextID() (string, error)
 	WithID(func(string) error) error
+}
+
+type NanoTimeID struct {
+}
+
+func (n *NanoTimeID) NextID() (string, error) {
+	return fmt.Sprintf("%d", time.Now().UnixNano()), nil
+}
+
+func (n *NanoTimeID) WithID(handle func(string) error) error {
+	id, err := n.NextID()
+	if err != nil {
+		return err
+	}
+	return handle(id)
 }
 
 type GenRandomRepoShortID struct {

@@ -8,6 +8,7 @@ import (
 
 type Display interface {
 	Display(c telebot.Context) error
+	RankDisplay(c telebot.Context, ranker helper.Ranker) error
 }
 
 func (t TelegramMineGame) Display(c telebot.Context) error {
@@ -99,6 +100,120 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 			buttons = append(buttons, []telebot.InlineButton{
 				{
 					Unique: "mine",
+					Text:   helper.Messages[info.Locale]["mine.game.lose.button"].String(),
+					Data:   strconv.Itoa(t.Width()) + "|" + strconv.Itoa(t.Height()) + "|" + strconv.Itoa(t.Mines()) + "|" + strconv.FormatInt(t.UserID(), 10) + "|" + strconv.Itoa(info.Topic),
+				},
+			})
+		}
+		if err != nil {
+			return err
+		}
+
+		_, err = c.Bot().Edit(telebot.StoredMessage{
+			MessageID: strconv.Itoa(info.Message),
+			ChatID:    info.Chat,
+		}, text, &telebot.ReplyMarkup{InlineKeyboard: buttons})
+	}
+
+	return err
+}
+
+func (t TelegramMineGame) RankDisplay(c telebot.Context, ranker helper.Ranker) error {
+
+	var (
+		boxes   = t.Boxes()
+		info    = t.Infos()
+		buttons [][]telebot.InlineButton
+		text    string
+		err     error
+	)
+
+	switch t.Status() {
+	case Init, UnInit:
+		buttons = t.emptyButton()
+		text, err = helper.Messages[info.Locale]["mine.game.rank.start.note"].Execute(map[string]string{
+			"Username": c.Sender().Username,
+			"Width":    strconv.Itoa(t.Width()),
+			"Height":   strconv.Itoa(t.Height()),
+			"Mines":    strconv.Itoa(t.Mines()),
+		})
+		var change string
+		if info.Button == BFlag {
+			change = "mine.game.opt.click"
+		} else {
+			change = "mine.game.opt.flag"
+		}
+		buttons = append(buttons, []telebot.InlineButton{
+			{
+				Unique: "change",
+				Text:   helper.Messages[info.Locale][change].String(),
+				Data:   t.ID(),
+			},
+			{
+				Unique: "quit",
+				Text:   helper.Messages[info.Locale]["mine.game.opt.quit"].String(),
+				Data:   t.ID(),
+			},
+		})
+		if err != nil {
+			return err
+		}
+		_, err = c.Bot().EditReplyMarkup(telebot.StoredMessage{
+			MessageID: strconv.Itoa(info.Message),
+			ChatID:    info.Chat,
+		}, &telebot.ReplyMarkup{InlineKeyboard: buttons})
+	case Running:
+		buttons = t.runningButton(boxes)
+		var change string
+		if info.Button == BFlag {
+			change = "mine.game.opt.click"
+		} else {
+			change = "mine.game.opt.flag"
+		}
+		buttons = append(buttons, []telebot.InlineButton{
+			{
+				Unique: "change",
+				Text:   helper.Messages[info.Locale][change].String(),
+				Data:   t.ID(),
+			},
+			{
+				Unique: "quit",
+				Text:   helper.Messages[info.Locale]["mine.game.opt.quit"].String(),
+				Data:   t.ID(),
+			},
+		})
+		_, err = c.Bot().EditReplyMarkup(telebot.StoredMessage{
+			MessageID: strconv.Itoa(info.Message),
+			ChatID:    info.Chat,
+		}, &telebot.ReplyMarkup{InlineKeyboard: buttons})
+	case End:
+		buttons = t.endedButton(boxes, t.Win())
+		if t.Win() {
+
+			item := ranker.Add(t.Score())
+			text, err = helper.Messages[info.Locale]["mine.game.rank.win.note"].Execute(map[string]string{
+				"Username": c.Sender().Username,
+				"Width":    strconv.Itoa(t.Width()),
+				"Height":   strconv.Itoa(t.Height()),
+				"Mines":    strconv.Itoa(t.Mines()),
+				"Seconds":  strconv.FormatFloat(t.Duration().Seconds(), 'f', 3, 64),
+				"Score":    strconv.FormatFloat(item.Score, 'f', 2, 64),
+				"Rank":     strconv.Itoa(item.Index),
+				"BotName":  helper.BotName,
+			})
+		} else {
+
+			text, err = helper.Messages[info.Locale]["mine.game.rank.lose.note"].Execute(map[string]string{
+				"Username": c.Sender().Username,
+				"Width":    strconv.Itoa(t.Width()),
+				"Height":   strconv.Itoa(t.Height()),
+				"Mines":    strconv.Itoa(t.Mines()),
+				"Seconds":  strconv.FormatFloat(t.Duration().Seconds(), 'f', 3, 64),
+				"BotName":  helper.BotName,
+			})
+			buttons = append(buttons, []telebot.InlineButton{
+				{
+					Unique: "mine_r",
 					Text:   helper.Messages[info.Locale]["mine.game.lose.button"].String(),
 					Data:   strconv.Itoa(t.Width()) + "|" + strconv.Itoa(t.Height()) + "|" + strconv.Itoa(t.Mines()) + "|" + strconv.FormatInt(t.UserID(), 10) + "|" + strconv.Itoa(info.Topic),
 				},

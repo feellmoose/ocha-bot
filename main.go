@@ -5,6 +5,7 @@ import (
 	"gopkg.in/telebot.v4/middleware"
 	"log"
 	"ocha_server_bot/command"
+	"ocha_server_bot/command/mine"
 	"ocha_server_bot/helper"
 	"os"
 	"time"
@@ -36,11 +37,19 @@ func main() {
 
 	repoLanguage := helper.NewFileRepo(home, "language")
 	repoMine := helper.NewFileRepo(home, "mine")
+	repoRank := helper.NewFileRepo(home, "mine_rank")
 
 	langRepo := helper.NewLanguageRepo(repoLanguage)
 
+	rank := helper.NewQueueRank(repoRank, 100, func(a any) float64 {
+		if s, ok := a.(mine.TelegramMineGameScore); ok {
+			return s.Score
+		}
+		return 0
+	})
+
 	menu := command.NewMenuCommandExec(langRepo)
-	mine := command.NewMineCommandExec(repoMine, langRepo, menu)
+	mi := command.NewMineCommandExec(repoMine, rank, langRepo, menu)
 	help := command.NewHelpCommandExec(langRepo)
 	lang := command.NewLanguageCommandExec(langRepo, menu)
 	stat := command.NewStatusCommandExec([]helper.Repo{repoLanguage, repoMine}, langRepo)
@@ -55,13 +64,13 @@ func main() {
 		}
 	}))
 
-	bot.Handle("/mine", mine.Mine)
-	bot.Handle("\fmine", mine.Mine)
-	bot.Handle("\fflag", mine.Flag)
-	bot.Handle("\fback", mine.Rollback)
-	bot.Handle("\fquit", mine.Quit)
-	bot.Handle("\fclick", mine.Click)
-	bot.Handle("\fchange", mine.Change)
+	bot.Handle("/mine", mi.Mine)
+	bot.Handle("\fmine", mi.Mine)
+	bot.Handle("\fflag", mi.Flag)
+	bot.Handle("\fback", mi.Rollback)
+	bot.Handle("\fquit", mi.Quit)
+	bot.Handle("\fclick", mi.Click)
+	bot.Handle("\fchange", mi.Change)
 
 	bot.Handle("/help", help.Help)
 

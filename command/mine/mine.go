@@ -2,6 +2,7 @@ package mine
 
 import (
 	"gopkg.in/telebot.v4"
+	"ocha_server_bot/helper"
 	"strconv"
 	"time"
 )
@@ -27,6 +28,7 @@ type Mine interface {
 
 	Serialize() Serialized
 	Display(c telebot.Context) error
+	RankDisplay(c telebot.Context, ranker helper.Ranker) error
 }
 
 type Serialized struct {
@@ -143,6 +145,8 @@ type GameType string
 
 const (
 	ClassicBottom GameType = "Classic_Bottom"
+	Classic       GameType = "c"
+	Rank          GameType = "r"
 )
 
 type Button string
@@ -153,12 +157,13 @@ const (
 )
 
 type Additional struct {
-	Type    GameType
-	Button  Button
-	Locale  string
-	Topic   int
-	Chat    int64
-	Message int
+	Type     GameType
+	Button   Button
+	Locale   string
+	Username string
+	Topic    int
+	Chat     int64
+	Message  int
 }
 
 func (a Additional) ToMap() map[string]string {
@@ -166,6 +171,9 @@ func (a Additional) ToMap() map[string]string {
 		"type":   string(a.Type),
 		"button": string(a.Button),
 		"locale": a.Locale,
+	}
+	if a.Username != "" {
+		res["username"] = a.Username
 	}
 	if a.Topic != 0 {
 		res["topic"] = strconv.Itoa(a.Topic)
@@ -181,6 +189,7 @@ func (a Additional) ToMap() map[string]string {
 
 func FromMap(m map[string]string) (Additional, error) {
 	chat, topic, message := int64(0), 0, 0
+	username := ""
 
 	if val, ok := m["topic"]; ok {
 		if v, err := strconv.Atoi(val); err == nil {
@@ -197,13 +206,17 @@ func FromMap(m map[string]string) (Additional, error) {
 			message = v
 		}
 	}
+	if val, ok := m["username"]; ok {
+		username = val
+	}
 
 	return Additional{
-		Type:    GameType(m["type"]),
-		Button:  Button(m["button"]),
-		Locale:  m["locale"],
-		Topic:   topic,
-		Chat:    chat,
-		Message: message,
+		Type:     GameType(m["type"]),
+		Button:   Button(m["button"]),
+		Locale:   m["locale"],
+		Topic:    topic,
+		Chat:     chat,
+		Message:  message,
+		Username: username,
 	}, nil
 }
