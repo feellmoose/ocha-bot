@@ -346,7 +346,11 @@ func (r *FileRepo[T]) Stop() {
 
 func (r *FileRepo[T]) Get(key string) (T, bool) {
 	v, ok := r.data.Load(key)
-	return v.(T), ok
+	if v != nil {
+		return v.(T), ok
+	}
+	var zero T
+	return zero, ok
 }
 
 func (r *FileRepo[T]) Put(key string, value T) bool {
