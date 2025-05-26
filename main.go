@@ -72,7 +72,7 @@ func main() {
 	bot.Handle("\fclick", mi.Click)
 	bot.Handle("\fchange", mi.Change)
 
-	bot.Handle("/mine_r", mi.MineRank)
+	bot.Handle("/mine_rank", mi.MineRank)
 	bot.Handle("\fmine_r", mi.MineR)
 
 	bot.Handle("/help", help.Help)
