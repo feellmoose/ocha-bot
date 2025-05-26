@@ -106,7 +106,7 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 }
 
 func (m *MineCommandExec) MineRank(c telebot.Context) error {
-
+	return nil
 }
 
 func (m *MineCommandExec) MineR(c telebot.Context) error {
