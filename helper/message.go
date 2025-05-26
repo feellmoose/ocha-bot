@@ -124,7 +124,7 @@ var templates = map[string]map[string]string{
 		"mine.game.opt.quit":              "逃跑喵",
 		"mine.game.opt.flag":              "插旗旗",
 		"mine.game.opt.click":             "点爆它",
-		"mine.game.menu.rank.button":      "天梯赛，nya~",
+		"mine.game.menu.rank.button":      "最新最热最好的！天梯赛！",
 		"mine.game.rank.start.note":       "@{{ .Username }}\n喵喵喵~你的游戏开始啦~ 只要您这次扫雷挑战完成，成绩就会被记录到天梯赛榜单上哦~ 您已踏入全新 {{ .Width }} × {{ .Height }} 扫雷地图，埋伏了 {{ .Mines }} 颗地雷",
 		"mine.game.rank.win.note":         "@{{ .Username }}\n你竟然赢了喵！？哼哼~你是不是偷偷作弊了？不然怎么可能在 {{ .Seconds }} 秒就通关。\n天梯赛得分\\排位：{{ .Score }}\\{{ .Rank }}\n地图尺寸：{{ .Width }} × {{ .Height }}\n地雷数量：{{ .Mines }}\n要看详细榜单，请输入 /mine_rank@{{ .BotName }}",
 		"mine.game.rank.lose.note":        "@{{ .Username }}\n砰！💣\n好可惜，这次记录没能挤进天梯赛排位里…\n耗时：{{ .Seconds }} 秒，nya~\n地图尺寸：{{ .Width }} × {{ .Height }}\n地雷数量：{{ .Mines }}\n要看详细榜单，请输入 /mine_rank@{{ .BotName }}",
