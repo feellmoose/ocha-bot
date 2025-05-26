@@ -198,7 +198,7 @@ func (t TelegramMineGame) RankDisplay(c telebot.Context, ranker helper.Ranker) e
 				"Mines":    strconv.Itoa(t.Mines()),
 				"Seconds":  strconv.FormatFloat(t.Duration().Seconds(), 'f', 3, 64),
 				"Score":    strconv.FormatFloat(item.Score, 'f', 2, 64),
-				"Rank":     strconv.Itoa(item.Index),
+				"Rank":     strconv.Itoa(item.Index + 1),
 				"BotName":  helper.BotName,
 			})
 		} else {

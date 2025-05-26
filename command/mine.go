@@ -6,6 +6,7 @@ import (
 	"ocha_server_bot/command/mine"
 	"ocha_server_bot/helper"
 	"strconv"
+	"time"
 )
 
 // MineCommandFunc support commands:
@@ -106,7 +107,30 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 }
 
 func (m *MineCommandExec) MineRank(c telebot.Context) error {
-	return nil
+	l := m.langRepo.Context(c)
+	lines := ""
+	for _, rank := range m.rank.Items() {
+		score := rank.Item.(mine.TelegramMineGameScore)
+		text, err := helper.Messages[l]["mine.game.rank.line.note"].Execute(map[string]string{
+			"Index":    strconv.Itoa(rank.Index),
+			"Score":    strconv.FormatFloat(rank.Score, 'f', 2, 64),
+			"Duration": strconv.FormatInt(score.Duration, 64) + "ms",
+			"Username": score.Username,
+		})
+		if err != nil {
+			return err
+		}
+		lines = lines + text
+	}
+	text, err := helper.Messages[l]["mine.game.rank.res.note"].Execute(map[string]string{
+		"Username":  c.Sender().Username,
+		"RankLines": lines,
+		"Update":    time.Now().Format("2006-01-02 15:04:05"),
+	})
+	if err != nil {
+		return err
+	}
+	return c.Send(text, telebot.ModeHTML)
 }
 
 func (m *MineCommandExec) MineR(c telebot.Context) error {
