@@ -72,6 +72,8 @@ func main() {
 	bot.Handle("\fclick", mi.Click)
 	bot.Handle("\fchange", mi.Change)
 
+	bot.Handle("\fmine_r", mi.MineRank)
+
 	bot.Handle("/help", help.Help)
 
 	bot.Handle("/menu", menu.Menu)
