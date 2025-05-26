@@ -27,16 +27,16 @@ func (n *NanoTimeID) WithID(handle func(string) error) error {
 	return handle(id)
 }
 
-type GenRandomRepoShortID struct {
+type GenRandomRepoShortID[T any] struct {
 	locks  sync.Map
-	repo   Repo
+	repo   Repo[T]
 	MinLen int
 	MaxLen int
 	Retry  int
 }
 
-func NewGenRandomRepoShortID(minLen, maxLen, retry int, repo Repo) *GenRandomRepoShortID {
-	return &GenRandomRepoShortID{
+func NewGenRandomRepoShortID[T any](minLen, maxLen, retry int, repo Repo[T]) *GenRandomRepoShortID[T] {
+	return &GenRandomRepoShortID[T]{
 		locks:  sync.Map{},
 		repo:   repo,
 		MaxLen: maxLen,
@@ -45,7 +45,7 @@ func NewGenRandomRepoShortID(minLen, maxLen, retry int, repo Repo) *GenRandomRep
 	}
 }
 
-func (g *GenRandomRepoShortID) NextID() (string, error) {
+func (g *GenRandomRepoShortID[T]) NextID() (string, error) {
 	for i := g.MinLen; i <= g.MaxLen; i++ {
 		draft := RandomString(i)
 		if _, ok := g.repo.Get(draft); !ok {
@@ -61,7 +61,7 @@ func (g *GenRandomRepoShortID) NextID() (string, error) {
 	return "", errors.New("ID gen failed")
 }
 
-func (g *GenRandomRepoShortID) WithID(handle func(string) error) error {
+func (g *GenRandomRepoShortID[T]) WithID(handle func(string) error) error {
 	id, err := g.NextID()
 	if err != nil {
 		return err

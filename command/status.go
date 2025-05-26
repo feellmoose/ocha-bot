@@ -14,11 +14,11 @@ type StatusCommandFunc interface {
 }
 
 type StatusCommandExec struct {
-	repos []helper.Repo
+	repos []helper.RepoInfo
 	lang  helper.LanguageRepoFunc
 }
 
-func NewStatusCommandExec(repos []helper.Repo, lang helper.LanguageRepoFunc) *StatusCommandExec {
+func NewStatusCommandExec(repos []helper.RepoInfo, lang helper.LanguageRepoFunc) *StatusCommandExec {
 	return &StatusCommandExec{
 		repos: repos,
 		lang:  lang,
@@ -44,7 +44,7 @@ func (s *StatusCommandExec) Status(c telebot.Context) error {
 	la := s.lang.Context(c)
 	for _, repo := range s.repos {
 		data := "NaN"
-		if file, ok := repo.(*helper.FileRepo); ok {
+		if file, ok := repo.(helper.FileRepoInfo); ok {
 			data = strconv.FormatInt(file.DataSize(), 10) + " bytes"
 		}
 		r, err := helper.Messages[la]["stat.repo.note"].Execute(map[string]string{
@@ -88,28 +88,18 @@ func (s *StatusCommandExec) analysisMineGame() (active, running, total int) {
 	running = 0
 	total = 0
 	for _, repo := range s.repos {
-		if repo.Name() == "mine" {
+		if r, ok := repo.(helper.Repo[mine.Serialized]); ok {
 			after := time.Now().Add(-2 * time.Minute)
-			del := make([]string, 0)
-			repo.Range(func(k, value any) bool {
-				if game, ok := value.(mine.Serialized); ok {
-					total++
-					if game.Status == mine.Running {
-						running++
-						if game.Update.After(after) {
-							active++
-						}
-					}
-				} else {
-					if key, ok := k.(string); ok {
-						del = append(del, key)
+			r.Range(func(k string, value mine.Serialized) bool {
+				total++
+				if value.Status == mine.Running {
+					running++
+					if value.Update.After(after) {
+						active++
 					}
 				}
 				return true
 			})
-			for _, key := range del {
-				repo.Del(key)
-			}
 		}
 	}
 	return active, running, total

@@ -28,7 +28,7 @@ type Mine interface {
 
 	Serialize() Serialized
 	Display(c telebot.Context) error
-	RankDisplay(c telebot.Context, ranker helper.Ranker) error
+	RankDisplay(c telebot.Context, ranker helper.Ranker[TelegramMineGameScore]) error
 }
 
 type Serialized struct {

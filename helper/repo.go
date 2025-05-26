@@ -12,14 +12,21 @@ import (
 	"time"
 )
 
-type Repo interface {
-	Get(key string) (interface{}, bool)
-	Put(key string, value interface{}) bool
-	Del(key string) bool
-	Range(f func(key, value any) bool)
+type RepoInfo interface {
 	Size() int
 	Name() string
 	Type() string
+}
+
+type FileRepoInfo interface {
+	DataSize() int64
+}
+
+type Repo[T any] interface {
+	Get(key string) (T, bool)
+	Put(key string, value T) bool
+	Del(key string) bool
+	Range(f func(key string, value T) bool)
 	Stop()
 }
 
@@ -31,12 +38,12 @@ const (
 	None   RepoType = "None"
 )
 
-type Item struct {
-	value      interface{}
+type Item[T any] struct {
+	value      T
 	expiration time.Time
 }
 
-type MemRepo struct {
+type MemRepo[T any] struct {
 	name    string
 	data    sync.Map
 	cleanup *time.Ticker
@@ -44,8 +51,8 @@ type MemRepo struct {
 	stop    chan struct{}
 }
 
-func NewMemRepo(name string) *MemRepo {
-	repo := &MemRepo{
+func NewMemRepo[T any](name string) *MemRepo[T] {
+	repo := &MemRepo[T]{
 		name:    name,
 		stop:    make(chan struct{}),
 		cleanup: time.NewTicker(1 * time.Second),
@@ -57,12 +64,12 @@ func NewMemRepo(name string) *MemRepo {
 	return repo
 }
 
-func (r *MemRepo) cleanupExpired() {
+func (r *MemRepo[T]) cleanupExpired() {
 	for {
 		select {
 		case <-r.cleanup.C:
-			r.data.Range(func(key, value interface{}) bool {
-				item, ok := value.(Item)
+			r.data.Range(func(key, value any) bool {
+				item, ok := value.(Item[T])
 				if !ok {
 					return true
 				}
@@ -77,23 +84,23 @@ func (r *MemRepo) cleanupExpired() {
 	}
 }
 
-func (r *MemRepo) Stop() {
+func (r *MemRepo[T]) Stop() {
 	close(r.stop)
 	r.cleanup.Stop()
 }
 
-func (r *MemRepo) Type() string {
+func (r *MemRepo[T]) Type() string {
 	return string(Memory)
 }
 
-func (r *MemRepo) Name() string {
+func (r *MemRepo[T]) Name() string {
 	return r.name
 }
 
-func (r *MemRepo) Size() int {
+func (r *MemRepo[T]) Size() int {
 	count := 0
-	r.data.Range(func(key, value interface{}) bool {
-		item, ok := value.(Item)
+	r.data.Range(func(key, value any) bool {
+		item, ok := value.(Item[T])
 		if !ok {
 			return true
 		}
@@ -107,35 +114,38 @@ func (r *MemRepo) Size() int {
 	return count
 }
 
-func (r *MemRepo) Range(f func(key, value interface{}) bool) {
-	r.data.Range(func(k, v interface{}) bool {
-		item, ok := v.(Item)
+func (r *MemRepo[T]) Range(f func(key string, value T) bool) {
+	r.data.Range(func(k, v any) bool {
+		item, ok := v.(Item[T])
 		if !ok {
 			return true
 		}
 		if time.Now().After(item.expiration) {
 			r.Del(k.(string))
 		} else {
-			return f(k, v)
+			return f(k.(string), item.value)
 		}
 		return true
 	})
 }
 
-func (r *MemRepo) Get(key string) (interface{}, bool) {
+func (r *MemRepo[T]) Get(key string) (T, bool) {
 	item, exists := r.data.Load(key)
 	if !exists {
-		return nil, false
+		var zero T
+		return zero, false
 	}
 
-	castedItem, ok := item.(Item)
+	castedItem, ok := item.(Item[T])
 	if !ok {
-		return nil, false
+		var zero T
+		return zero, false
 	}
 
 	if time.Now().After(castedItem.expiration) {
 		r.Del(key)
-		return nil, false
+		var zero T
+		return zero, false
 	}
 
 	r.Put(key, castedItem.value)
@@ -143,10 +153,10 @@ func (r *MemRepo) Get(key string) (interface{}, bool) {
 	return castedItem.value, true
 }
 
-func (r *MemRepo) Put(key string, value interface{}) bool {
+func (r *MemRepo[T]) Put(key string, value T) bool {
 	expirationTime := time.Now().Add(r.ttl)
 
-	r.data.Store(key, Item{
+	r.data.Store(key, Item[T]{
 		value:      value,
 		expiration: expirationTime,
 	})
@@ -154,7 +164,7 @@ func (r *MemRepo) Put(key string, value interface{}) bool {
 	return true
 }
 
-func (r *MemRepo) Del(key string) bool {
+func (r *MemRepo[T]) Del(key string) bool {
 	_, exists := r.data.Load(key)
 	if exists {
 		r.data.Delete(key)
@@ -163,7 +173,7 @@ func (r *MemRepo) Del(key string) bool {
 	return false
 }
 
-type FileRepo struct {
+type FileRepo[T any] struct {
 	dir      string
 	name     string
 	filename string
@@ -172,7 +182,7 @@ type FileRepo struct {
 	stop     chan struct{}
 }
 
-func NewFileRepo(dir string, name string) *FileRepo {
+func NewFileRepo[T any](dir string, name string) *FileRepo[T] {
 	var (
 		fn       = name + "_" + strconv.FormatInt(BotID, 10) + "_data.json"
 		filename = filepath.Join(dir, fn)
@@ -188,7 +198,7 @@ func NewFileRepo(dir string, name string) *FileRepo {
 		}
 
 		encoder := json.NewEncoder(file)
-		if err = encoder.Encode(make(map[string]interface{})); err != nil {
+		if err = encoder.Encode(make(map[string]T)); err != nil {
 			log.Panicf("Error create file repo: encode {} in create file error=%v", err)
 		}
 
@@ -203,7 +213,7 @@ func NewFileRepo(dir string, name string) *FileRepo {
 			log.Panicf("Error create file repo: file error=%v", err)
 		}
 
-		var temp map[string]interface{}
+		var temp map[string]T
 		decoder := json.NewDecoder(file)
 		if err = decoder.Decode(&temp); err != nil {
 			log.Panicf("Error create file repo: decode failed error=%v", err)
@@ -215,7 +225,7 @@ func NewFileRepo(dir string, name string) *FileRepo {
 		log.Printf("Load File(filename=%s) data success", filename)
 	}
 
-	repo := &FileRepo{
+	repo := &FileRepo[T]{
 		dir:      dir,
 		name:     name,
 		filename: fn,
@@ -229,7 +239,7 @@ func NewFileRepo(dir string, name string) *FileRepo {
 	return repo
 }
 
-func (r *FileRepo) loop() {
+func (r *FileRepo[T]) loop() {
 	for {
 		select {
 		case <-r.sticker.C:
@@ -243,7 +253,7 @@ func (r *FileRepo) loop() {
 	}
 }
 
-func (r *FileRepo) Sync() error {
+func (r *FileRepo[T]) Sync() error {
 	temp, err := os.CreateTemp(r.dir, "repo_*.json")
 	if err != nil {
 		return err
@@ -252,13 +262,17 @@ func (r *FileRepo) Sync() error {
 	defer os.Remove(temp.Name())
 	encoder := json.NewEncoder(temp)
 
-	tempMap := make(map[string]interface{})
-	r.data.Range(func(key, value interface{}) bool {
+	tempMap := make(map[string]T)
+	r.data.Range(func(key, value any) bool {
 		strKey, ok := key.(string)
 		if !ok {
 			return true
 		}
-		tempMap[strKey] = value
+		tv, ok := value.(T)
+		if !ok {
+			return true
+		}
+		tempMap[strKey] = tv
 		return true
 	})
 
@@ -288,15 +302,15 @@ func (r *FileRepo) Sync() error {
 	return nil
 }
 
-func (r *FileRepo) Type() string {
+func (r *FileRepo[T]) Type() string {
 	return string(File)
 }
 
-func (r *FileRepo) Name() string {
+func (r *FileRepo[T]) Name() string {
 	return r.name
 }
 
-func (r *FileRepo) DataSize() int64 {
+func (r *FileRepo[T]) DataSize() int64 {
 	fileInfo, err := os.Stat(filepath.Join(r.dir, r.filename))
 	if err != nil {
 		return 0
@@ -304,7 +318,7 @@ func (r *FileRepo) DataSize() int64 {
 	return fileInfo.Size()
 }
 
-func (r *FileRepo) Size() int {
+func (r *FileRepo[T]) Size() int {
 	count := 0
 	r.data.Range(func(_, _ any) bool {
 		count++
@@ -313,11 +327,13 @@ func (r *FileRepo) Size() int {
 	return count
 }
 
-func (r *FileRepo) Range(f func(key, value interface{}) bool) {
-	r.data.Range(f)
+func (r *FileRepo[T]) Range(f func(key string, value T) bool) {
+	r.data.Range(func(k, v any) bool {
+		return f(k.(string), v.(T))
+	})
 }
 
-func (r *FileRepo) Stop() {
+func (r *FileRepo[T]) Stop() {
 	close(r.stop)
 	err := r.Sync()
 	if err != nil {
@@ -328,16 +344,17 @@ func (r *FileRepo) Stop() {
 	}
 }
 
-func (r *FileRepo) Get(key string) (interface{}, bool) {
-	return r.data.Load(key)
+func (r *FileRepo[T]) Get(key string) (T, bool) {
+	v, ok := r.data.Load(key)
+	return v.(T), ok
 }
 
-func (r *FileRepo) Put(key string, value interface{}) bool {
+func (r *FileRepo[T]) Put(key string, value T) bool {
 	r.data.Store(key, value)
 	return true
 }
 
-func (r *FileRepo) Del(key string) bool {
+func (r *FileRepo[T]) Del(key string) bool {
 	_, exists := r.data.Load(key)
 	if exists {
 		r.data.Delete(key)

@@ -14,10 +14,10 @@ type LanguageRepoFunc interface {
 }
 
 type LanguageRepo struct {
-	repo Repo
+	repo Repo[string]
 }
 
-func NewLanguageRepo(repo Repo) *LanguageRepo {
+func NewLanguageRepo(repo Repo[string]) *LanguageRepo {
 	return &LanguageRepo{
 		repo: repo,
 	}
@@ -39,11 +39,11 @@ func (r LanguageRepo) Lang(lang string) string {
 func (r LanguageRepo) Context(c telebot.Context) string {
 	user := strconv.FormatInt(c.Sender().ID, 10)
 	if lang, ok := r.repo.Get("us_" + user); ok {
-		return lang.(string)
+		return lang
 	}
 	chat := strconv.FormatInt(c.Chat().ID, 10)
 	if lang, ok := r.repo.Get("ch_" + chat); ok {
-		return lang.(string)
+		return lang
 	}
 	return r.Lang(c.Sender().LanguageCode)
 }
@@ -81,7 +81,7 @@ func (r LanguageRepo) SetUserLanguageByContext(c telebot.Context, lang string) e
 
 func (r LanguageRepo) userLanguage(user string) string {
 	if lang, ok := r.repo.Get("us_" + user); ok {
-		return lang.(string)
+		return lang
 	}
 	return "en"
 }
@@ -92,7 +92,7 @@ func (r LanguageRepo) setUserLanguage(user string, lang string) bool {
 
 func (r LanguageRepo) chatLanguage(chat string) string {
 	if lang, ok := r.repo.Get("ch_" + chat); ok {
-		return lang.(string)
+		return lang
 	}
 	return "en"
 }

@@ -31,17 +31,17 @@ type MineCommandFunc interface {
 */
 
 type MineCommandExec struct {
-	repo     helper.Repo
+	repo     helper.Repo[mine.Serialized]
 	langRepo helper.LanguageRepoFunc
 	id       helper.GenID
 	factory  mine.Factory
 	menu     MenuCommandFunc
-	rank     helper.Ranker
+	rank     helper.Ranker[mine.TelegramMineGameScore]
 }
 
 func NewMineCommandExec(
-	repo helper.Repo,
-	rank helper.Ranker,
+	repo helper.Repo[mine.Serialized],
+	rank helper.Ranker[mine.TelegramMineGameScore],
 	langRepo helper.LanguageRepoFunc,
 	menu MenuCommandFunc,
 ) *MineCommandExec {
@@ -110,7 +110,7 @@ func (m *MineCommandExec) MineRank(c telebot.Context) error {
 	l := m.langRepo.Context(c)
 	lines := ""
 	for _, rank := range m.rank.Items() {
-		score := rank.Item.(mine.TelegramMineGameScore)
+		score := rank.Item
 		text, err := helper.Messages[l]["mine.game.rank.line.note"].Execute(map[string]string{
 			"Index":    strconv.Itoa(rank.Index),
 			"Score":    strconv.FormatFloat(rank.Score, 'f', 2, 64),
@@ -231,7 +231,7 @@ func (m *MineCommandExec) mine(width, height, mines, message, topic int, user, c
 
 func (m *MineCommandExec) click(id string, user int64, x, y int, c telebot.Context) error {
 	if data, ok := m.repo.Get(id); ok {
-		game := data.(mine.Serialized).Deserialize()
+		game := data.Deserialize()
 		if user != game.UserID() {
 			return nil
 		}
@@ -261,7 +261,7 @@ func (m *MineCommandExec) click(id string, user int64, x, y int, c telebot.Conte
 
 func (m *MineCommandExec) flag(id string, user int64, x, y int, c telebot.Context) error {
 	if data, ok := m.repo.Get(id); ok {
-		game := data.(mine.Serialized).Deserialize()
+		game := data.Deserialize()
 		if user != game.UserID() || game.Status() == mine.UnInit {
 			return nil
 		}
@@ -277,7 +277,7 @@ func (m *MineCommandExec) flag(id string, user int64, x, y int, c telebot.Contex
 
 func (m *MineCommandExec) change(id string, user int64, c telebot.Context) error {
 	if data, ok := m.repo.Get(id); ok {
-		game := data.(mine.Serialized).Deserialize()
+		game := data.Deserialize()
 
 		if user != game.UserID() {
 			return nil
@@ -310,7 +310,7 @@ func (m *MineCommandExec) change(id string, user int64, c telebot.Context) error
 
 func (m *MineCommandExec) rollback(id string, user int64, c telebot.Context) error {
 	if data, ok := m.repo.Get(id); ok {
-		game := data.(mine.Serialized).Deserialize()
+		game := data.Deserialize()
 		if user != game.UserID() {
 			return nil
 		}
@@ -326,7 +326,7 @@ func (m *MineCommandExec) rollback(id string, user int64, c telebot.Context) err
 
 func (m *MineCommandExec) quit(id string, user int64, c telebot.Context) error {
 	if data, ok := m.repo.Get(id); ok {
-		game := data.(mine.Serialized).Deserialize()
+		game := data.Deserialize()
 		if user != game.UserID() {
 			return nil
 		}

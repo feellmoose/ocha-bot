@@ -8,7 +8,7 @@ import (
 
 type Display interface {
 	Display(c telebot.Context) error
-	RankDisplay(c telebot.Context, ranker helper.Ranker) error
+	RankDisplay(c telebot.Context, ranker helper.Ranker[TelegramMineGameScore]) error
 }
 
 func (t TelegramMineGame) Display(c telebot.Context) error {
@@ -118,7 +118,7 @@ func (t TelegramMineGame) Display(c telebot.Context) error {
 	return err
 }
 
-func (t TelegramMineGame) RankDisplay(c telebot.Context, ranker helper.Ranker) error {
+func (t TelegramMineGame) RankDisplay(c telebot.Context, ranker helper.Ranker[TelegramMineGameScore]) error {
 
 	var (
 		boxes   = t.Boxes()

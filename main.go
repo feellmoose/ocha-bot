@@ -35,24 +35,21 @@ func main() {
 	helper.BotName = bot.Me.Username
 	helper.BotID = bot.Me.ID
 
-	repoMine := helper.NewMemRepo("mine")
-	repoLanguage := helper.NewFileRepo(home, "language")
-	repoRank := helper.NewFileRepo(home, "mine_rank")
+	repoMine := helper.NewMemRepo[mine.Serialized]("mine")
+	repoLanguage := helper.NewFileRepo[string](home, "language")
+	repoRank := helper.NewFileRepo[mine.TelegramMineGameScore](home, "mine_rank")
 
 	langRepo := helper.NewLanguageRepo(repoLanguage)
 
-	rank := helper.NewQueueRank(repoRank, 100, func(a any) float64 {
-		if s, ok := a.(mine.TelegramMineGameScore); ok {
-			return s.Score
-		}
-		return 0
+	rank := helper.NewQueueRank[mine.TelegramMineGameScore](repoRank, 100, func(a mine.TelegramMineGameScore) float64 {
+		return a.Score
 	})
 
 	menu := command.NewMenuCommandExec(langRepo)
 	mi := command.NewMineCommandExec(repoMine, rank, langRepo, menu)
 	help := command.NewHelpCommandExec(langRepo)
 	lang := command.NewLanguageCommandExec(langRepo, menu)
-	stat := command.NewStatusCommandExec([]helper.Repo{repoLanguage, repoRank, repoMine}, langRepo)
+	stat := command.NewStatusCommandExec([]helper.RepoInfo{repoLanguage, repoRank, repoMine}, langRepo)
 
 	bot.Use(middleware.Recover(func(err error, c telebot.Context) {
 		log.Printf("Bot error: %v (in context: %v)", err, c.Text())
