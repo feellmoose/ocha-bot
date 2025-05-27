@@ -87,7 +87,7 @@ func (m *MineCommandExec) Mine(c telebot.Context) error {
 		args := c.Args()
 		switch len(args) {
 		case 0:
-			return m.menu.RedirectTo(c, "mine")
+			return m.menu.RedirectTo(c, "mine_menu")
 		case 3:
 			width, _ = strconv.Atoi(args[0])
 			height, _ = strconv.Atoi(args[1])
