@@ -116,6 +116,10 @@ func (m *MineCommandExec) MineRank(c telebot.Context) error {
 		score := rank.Item
 		text, err := helper.Messages[l]["mine.game.rank.line.note"].Execute(map[string]string{
 			"Index":    strconv.Itoa(rank.Index + 1),
+			"Width":    strconv.Itoa(score.Width),
+			"Height":   strconv.Itoa(score.Height),
+			"Mines":    strconv.Itoa(score.Mines),
+			"Steps":    strconv.Itoa(score.Steps),
 			"Score":    strconv.FormatFloat(rank.Score, 'f', 2, 64),
 			"Duration": strconv.FormatInt(score.Duration, 10) + "ms",
 			"Username": score.Username,
