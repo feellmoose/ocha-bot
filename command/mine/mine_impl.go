@@ -26,23 +26,30 @@ func (t TelegramMineGame) Score() TelegramMineGameScore {
 		mines    = t.data.Mines
 		steps    = t.data.Steps
 		duration = t.Duration().Milliseconds()
-		safe     = width*height - mines
-		baseTime = float64(safe) * 0.5
 	)
 
-	totalCells := float64(width * height)
-	diff := float64(mines) / totalCells
-	const kd = 0.4
-	diffScore := diff / (diff + kd)
+	density := float64(mines) / (float64(width) * float64(height))
 
-	T := t.Duration().Seconds()
-	timeScore := baseTime / (baseTime + T)
+	boardSize := float64(width) * float64(height)
+
+	efficiency := float64(steps) / (float64(width)*float64(height) - float64(mines))
+
+	timeEfficiency := 10000 / float64(duration)
+
+	normalizedDensity := density / 1
+	normalizedBoardSize := boardSize / 64
+	normalizedEfficiency := efficiency
+	normalizedTimeEfficiency := min(timeEfficiency, 1)
+
+	difficultyScore := (normalizedDensity + normalizedBoardSize) / 2
+
+	score := (difficultyScore * 60) + (normalizedEfficiency * 25) + (normalizedTimeEfficiency * 15)
 
 	return TelegramMineGameScore{
 		Username: t.info.Username,
 		Time:     time.Now().Format("2006-01-02 15:04:05"),
 		Duration: duration,
-		Score:    100 * (diffScore + timeScore) / 2,
+		Score:    score,
 		Steps:    steps,
 		Mines:    mines,
 		Width:    width,
