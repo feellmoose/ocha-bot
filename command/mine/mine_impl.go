@@ -28,11 +28,11 @@ func (t TelegramMineGame) Score() TelegramMineGameScore {
 		duration = t.Duration().Milliseconds()
 	)
 
-	density := float64(mines) / (float64(width) * float64(height))
+	boardSize := float64(width * height)
 
-	boardSize := float64(width) * float64(height)
+	density := float64(mines) / boardSize
 
-	efficiency := float64(steps) / (float64(width)*float64(height) - float64(mines))
+	efficiency := 1 - float64(steps)/(float64(width*height-mines))
 
 	timeEfficiency := 10000 / float64(duration)
 
