@@ -24,7 +24,7 @@ func (t TelegramMineGame) Score() TelegramMineGameScore {
 		width    = t.data.Width
 		height   = t.data.Height
 		mines    = t.data.Mines
-		steps    = t.data.Steps
+		steps    = len(t.data.Histories)
 		duration = t.Duration().Milliseconds()
 	)
 
