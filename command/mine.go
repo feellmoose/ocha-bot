@@ -295,12 +295,13 @@ func (m *MineCommandExec) change(id string, user int64, c telebot.Context) error
 		}
 
 		game = game.OnInfoChanged(mine.Additional{
-			Type:    info.Type,
-			Button:  button,
-			Locale:  info.Locale,
-			Topic:   info.Topic,
-			Chat:    info.Chat,
-			Message: info.Message,
+			Type:     info.Type,
+			Button:   button,
+			Locale:   info.Locale,
+			Topic:    info.Topic,
+			Chat:     info.Chat,
+			Message:  info.Message,
+			Username: info.Username,
 		})
 
 		if !m.repo.Put(id, game.Serialize()) {
