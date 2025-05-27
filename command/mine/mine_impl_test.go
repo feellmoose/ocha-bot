@@ -56,14 +56,13 @@ func TestMineGameClick(t *testing.T) {
 }
 
 func TestSerialize(t *testing.T) {
-	repo := helper.NewFileRepo("", "test")
+	repo := helper.NewFileRepo[Serialized]("", "test")
 	f := Factory{}
 	e, _ := f.Empty("id", 1, Additional{}, 1, 1, 1)
 	defer repo.Stop()
 	repo.Put("id", e.Serialize())
 	inter, ok := repo.Get("id")
 	assert.Equal(t, ok, true)
-	i := inter.(Serialized)
-	fmt.Printf("%v", i)
+	fmt.Printf("%v", inter)
 	repo.Sync()
 }

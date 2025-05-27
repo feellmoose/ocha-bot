@@ -189,7 +189,6 @@ func (a Additional) ToMap() map[string]string {
 
 func FromMap(m map[string]string) (Additional, error) {
 	chat, topic, message := int64(0), 0, 0
-	username := ""
 
 	if val, ok := m["topic"]; ok {
 		if v, err := strconv.Atoi(val); err == nil {
@@ -206,9 +205,7 @@ func FromMap(m map[string]string) (Additional, error) {
 			message = v
 		}
 	}
-	if val, ok := m["username"]; ok {
-		username = val
-	}
+	username := m["username"]
 
 	return Additional{
 		Type:     GameType(m["type"]),
