@@ -2,6 +2,7 @@ package mine
 
 import (
 	"gopkg.in/telebot.v4"
+	"log"
 	"ocha_server_bot/helper"
 	"strconv"
 	"time"
@@ -184,6 +185,7 @@ func (a Additional) ToMap() map[string]string {
 	if a.Message != 0 {
 		res["message"] = strconv.Itoa(a.Message)
 	}
+	log.Printf("Current mine game map(...info=%v)", res)
 	return res
 }
 
@@ -206,7 +208,15 @@ func FromMap(m map[string]string) (Additional, error) {
 		}
 	}
 	username := m["username"]
-
+	log.Printf("Current mine game Additional(...info=%v)", Additional{
+		Type:     GameType(m["type"]),
+		Button:   Button(m["button"]),
+		Locale:   m["locale"],
+		Topic:    topic,
+		Chat:     chat,
+		Message:  message,
+		Username: username,
+	})
 	return Additional{
 		Type:     GameType(m["type"]),
 		Button:   Button(m["button"]),

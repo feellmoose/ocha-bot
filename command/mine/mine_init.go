@@ -2,7 +2,6 @@ package mine
 
 import (
 	"errors"
-	"log"
 	"math/rand/v2"
 	"time"
 )
@@ -88,8 +87,6 @@ func (f Factory) Empty(id string, user int64, info Additional, width, height, mi
 	if width*height <= mines {
 		return TelegramMineGame{}, errors.New("Width * Height <= Mines")
 	}
-
-	log.Printf("Create mine game (...info=%v)", info)
 
 	return TelegramMineGame{
 		data: Serialized{
