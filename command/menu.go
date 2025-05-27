@@ -173,7 +173,7 @@ func mineMenu(user int64, topic int, lang string, c telebot.Context) (string, *t
 		reply.Data(
 			helper.Messages[lang]["mine.game.menu.rank.button"].String(),
 			"menu",
-			"mine",
+			"mine_r",
 			"jump",
 			strconv.FormatInt(user, 10),
 			strconv.Itoa(topic),
@@ -182,7 +182,7 @@ func mineMenu(user int64, topic int, lang string, c telebot.Context) (string, *t
 		reply.Data(
 			helper.Messages[lang]["mine.game.menu.classic.button"].String(),
 			"menu",
-			"mine_r",
+			"mine",
 			"jump",
 			strconv.FormatInt(user, 10),
 			strconv.Itoa(topic),
