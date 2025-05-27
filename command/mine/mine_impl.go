@@ -25,14 +25,14 @@ func (t TelegramMineGame) Score() TelegramMineGameScore {
 		height   = t.data.Height
 		mines    = t.data.Mines
 		steps    = t.data.Steps
-		duration = t.Duration().Microseconds()
+		duration = t.Duration().Milliseconds()
 		safe     = width*height - mines
 		baseTime = float64(safe) * 0.5
 	)
 
 	totalCells := float64(width * height)
 	diff := float64(mines) / totalCells
-	const kd = 0.5
+	const kd = 0.4
 	diffScore := diff / (diff + kd)
 
 	T := t.Duration().Seconds()

@@ -88,7 +88,7 @@ var templates = map[string]map[string]string{
 		"mine.game.menu.rank.button":      "天梯赛",
 		"mine.game.rank.start.note":       "@{{ .Username }}\n欢迎使用 ocha 为您提供的娱乐服务，若本次扫雷任务成功，则会被记录在天梯赛榜单内。您已开始一个新的 {{ .Width }} × {{ .Height }} 扫雷地图。\n共有 {{ .Mines }} 个地雷",
 		"mine.game.rank.win.note":         "@{{ .Username }}\n恭喜！🎉\n您成功在 {{ .Seconds }} 秒内完成了游戏。\n天梯赛得分\\排位：{{ .Score }}\\{{ .Rank }}\n地图尺寸：{{ .Width }} × {{ .Height }}\n地雷数量：{{ .Mines }}\n使用指令查看详细榜单:\n/mine_rank@{{.BotName}}",
-		"mine.game.rank.lose.note":        "@{{ .Username }}\n砰！💣\n很遗憾，此次记录未能加入天体赛排位中。\n耗时：{{ .Seconds }} 秒。\n地图尺寸：{{ .Width }} × {{ .Height }}\n地雷数量：{{ .Mines }}\n使用指令查看详细榜单:\n/mine_rank@{{.BotName}}",
+		"mine.game.rank.lose.note":        "@{{ .Username }}\n砰！💣\n很遗憾，此次记录未能加入天梯赛排位中。\n耗时：{{ .Seconds }} 秒。\n地图尺寸：{{ .Width }} × {{ .Height }}\n地雷数量：{{ .Mines }}\n使用指令查看详细榜单:\n/mine_rank@{{.BotName}}",
 		"mine.game.rank.res.note":         "@{{.Username}}\n当前的扫雷天梯榜单如下：\n<blockquote expandable>\n| 排名 | 得分 | 用时 | 用户名 |\n{{.RankLines}}\n<\\blockquote>\n更新时间：{{.Update}}",
 		"mine.game.rank.line.note":        "| {{.Index}} | {{.Score}} | {{.Duration}} | {{.Username}} |\n",
 		"mine.game.start.note":            "@{{ .Username }}\n欢迎使用 ocha 为您提供的娱乐服务，您已开始一个新的 {{ .Width }} × {{ .Height }} 扫雷地图。\n共有 {{ .Mines }} 个地雷",
