@@ -1,14 +1,15 @@
 package main
 
 import (
-	"gopkg.in/telebot.v4"
-	"gopkg.in/telebot.v4/middleware"
 	"log"
 	"ocha_server_bot/command"
 	"ocha_server_bot/command/mine"
 	"ocha_server_bot/helper"
 	"os"
 	"time"
+
+	"gopkg.in/telebot.v4"
+	"gopkg.in/telebot.v4/middleware"
 )
 
 func main() {
@@ -35,6 +36,7 @@ func main() {
 	helper.BotName = bot.Me.Username
 	helper.BotID = bot.Me.ID
 
+	repoTask := helper.NewFileRepo[command.Task](home, "task")
 	repoMine := helper.NewFileRepo[mine.Serialized](home, "mine")
 	repoLanguage := helper.NewFileRepo[string](home, "language")
 	repoRank := helper.NewFileRepo[mine.TelegramMineGameScore](home, "mine_rank")
@@ -49,7 +51,8 @@ func main() {
 	mi := command.NewMineCommandExec(repoMine, rank, langRepo, menu)
 	help := command.NewHelpCommandExec(langRepo)
 	lang := command.NewLanguageCommandExec(langRepo, menu)
-	stat := command.NewStatusCommandExec([]helper.RepoInfo{repoLanguage, repoRank, repoMine}, langRepo)
+	task := command.NewTaskCommandExec(bot, repoTask, langRepo)
+	stat := command.NewStatusCommandExec([]helper.RepoInfo{repoLanguage, repoRank, repoMine, repoTask}, langRepo)
 
 	bot.Use(middleware.Recover(func(err error, c telebot.Context) {
 		log.Printf("Bot error: %v (in context: %v)", err, c.Text())
@@ -81,6 +84,10 @@ func main() {
 	bot.Handle("/lang_chat", lang.LanguageChat)
 	bot.Handle("\flang", lang.Language)
 	bot.Handle("\flang_chat", lang.LanguageChat)
+
+	bot.Handle("/cron", task.Cron)
+	bot.Handle("/tsk", task.Cron)
+	bot.Handle("/rmtsk", task.Cron)
 
 	bot.Handle("/stat", stat.Status)
 	bot.Handle("/stat_mine", stat.StatusMine)
