@@ -61,9 +61,9 @@ func NewTaskCommandExec(
 func (t *TaskCommandExec) Cron(c telebot.Context) error {
 	args := c.Args()
 	lang := t.langRepo.Context(c)
-	if len(args) > 6 {
-		cron := args[6][1 : len(args[6])-1]
-		msg := strings.Join(args[6:len(args)-1], " ")
+	if len(args) > 5 {
+		cron := strings.Join(args[0:5], " ")
+		msg := strings.Join(args[5:len(args)-1], " ")
 		id, err := t.id.NextID()
 		if err != nil {
 			return err
@@ -86,7 +86,14 @@ func (t *TaskCommandExec) Cron(c telebot.Context) error {
 			return err
 		}
 	} else {
-		c.Send(helper.Messages[lang]["cron.help.note"].String())
+		if msg, err := helper.Messages[lang]["cron.help.note"].Execute(map[string]string{"Username": c.Sender().Username}); err != nil {
+			return err
+		} else {
+			c.Send(
+				msg,
+				telebot.ModeHTML,
+			)
+		}
 	}
 	return nil
 }
@@ -120,11 +127,16 @@ func (t *TaskCommandExec) Recover(task Task) error {
 			)
 		})
 		if err != nil {
-			t.bot.Send(
-				&telebot.Chat{ID: task.Chat},
-				helper.Messages[task.Language]["cron.help.note"].String(),
-				&telebot.Topic{ThreadID: task.Thread},
-			)
+			if msg, e := helper.Messages[task.Language]["cron.help.note"].Execute(map[string]string{"Username": task.Editer}); e != nil {
+				err = errors.Join(err, e)
+			} else {
+				t.bot.Send(
+					&telebot.Chat{ID: task.Chat},
+					msg,
+					&telebot.Topic{ThreadID: task.Thread},
+					telebot.ModeHTML,
+				)
+			}
 			return err
 		}
 		t.tasks[task.ID] = id
@@ -159,7 +171,13 @@ func (t *TaskCommandExec) List(c telebot.Context) error {
 		}
 		return true
 	})
-	return c.Send(helper.Messages[lang]["cron.help.note"].Execute(map[string]string{
+	msg, err := helper.Messages[lang]["cron.list.note"].Execute(map[string]string{
+		"Username":  c.Sender().Username,
 		"TaskLines": lines,
-	}))
+		"Update":    time.Now().Format("2006-01-02 15:04:05"),
+	})
+	if err != nil {
+		return err
+	}
+	return c.Send(msg, telebot.ModeHTML)
 }
